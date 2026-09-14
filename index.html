@@ -1332,7 +1332,7 @@ function toggleDS(k){ hidden[k]=!hidden[k]; renderChart(); }
 /* ---------- Cloud-Sync (Supabase: Login + persönliche Datenbank je Nutzer) ---------- */
 const OWNER_KEY = "tr_owner_v1";                 // merkt sich, wessen Daten gerade im Browser-Zwischenspeicher liegen
 const SB_READY = typeof window.SUPABASE_URL==="string" && /^https:\/\/[a-z0-9-]+\.supabase\.co\/?$/i.test(window.SUPABASE_URL)
-  && typeof window.SUPABASE_ANON_KEY==="string" && window.SUPABASE_ANON_KEY.length>40 && !/HIER/i.test(window.SUPABASE_ANON_KEY);
+  && typeof window.SUPABASE_ANON_KEY==="string" && window.SUPABASE_ANON_KEY.length>20 && !/HIER/i.test(window.SUPABASE_ANON_KEY);
 const sb = (SB_READY && window.supabase) ? window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY) : null;
 let user = null; let pushTimer = null; let sync = { auto:true }; let recovering = false; let authMode = "login";
 function connected(){ return !!(sb && user); }
