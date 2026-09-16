@@ -65,10 +65,10 @@
   .wrap{max-width:1180px; margin:0 auto; padding:0 26px 80px}
   header{position:sticky; top:0; z-index:30; backdrop-filter:blur(16px) saturate(140%);
     background:var(--headbg); border-bottom:1px solid var(--stroke2)}
-  .headin{max-width:1180px; margin:0 auto; padding:15px 26px; display:flex; align-items:center; gap:16px; flex-wrap:wrap}
-  .brand{display:flex; align-items:center; gap:12px}
-  .logo{width:38px; height:38px; border-radius:12px; background:var(--grad); display:grid; place-items:center; font-size:19px; box-shadow:0 8px 24px -6px rgba(157,123,255,.6)}
-  .brand h1{margin:0; font-size:17px; font-weight:600}
+  .headin{max-width:1180px; margin:0 auto; padding:12px 26px; display:flex; align-items:center; gap:14px; flex-wrap:wrap}
+  .brand{display:flex; align-items:center; gap:10px; white-space:nowrap}
+  .logo{width:34px; height:34px; border-radius:10px; background:var(--grad); display:grid; place-items:center; font-size:17px; box-shadow:0 8px 24px -6px rgba(157,123,255,.45)}
+  .brand h1{margin:0; font-size:16px; font-weight:600}
   .brand .tag{font-size:11px; color:var(--muted); margin-top:1px}
   .spacer{flex:1}
   .syncpill{display:flex; align-items:center; gap:7px; font-size:12px; color:var(--muted); background:var(--glass); border:1px solid var(--stroke2); padding:7px 12px; border-radius:100px}
@@ -83,6 +83,8 @@
   .nav button:hover{background:var(--hover); transform:none; color:var(--text)}
   .nav button.on{background:var(--glass); color:var(--text); font-weight:600; box-shadow:0 1px 3px rgba(20,24,40,.14)}
   html[data-theme="dark"] .nav button.on{background:rgba(255,255,255,.1); box-shadow:none}
+  @media(max-width:1240px){ .nav button{padding:8px 12px} .headin{gap:10px} }
+  @media(max-width:1130px) and (min-width:721px){ #weekPill{display:none} .toolbar button{padding:9px 11px} }
   .view{display:none} .view.active{display:block; animation:fade .18s ease}
   .view > section:first-child, .view > .topgrid{margin-top:26px}
   #entryOverlay .modal{max-width:840px}
@@ -331,7 +333,6 @@
   @media(max-width:720px){
     header{position:static}
     .headin{padding:12px 16px; gap:10px}
-    .brand .tag{display:none}
     .brand h1{font-size:16px}
     .toolbar{width:100%; gap:6px}
     .toolbar button{padding:9px 12px; font-size:12.5px}
@@ -356,7 +357,7 @@
   <div class="headin">
     <div class="brand">
       <div class="logo">📈</div>
-      <div><h1 id="appTitle">Trading Dashboard</h1><div class="tag">Konten · Strategien · was wirklich funktioniert</div></div>
+      <h1 id="appTitle">Trading Dashboard</h1>
     </div>
     <nav class="nav" id="nav" aria-label="Ansichten">
       <button class="on" data-view="heute" onclick="showView('heute')">Heute</button>
@@ -573,7 +574,7 @@
           </div>
         </div>
         <datalist id="symbolList"><option value="XAUUSD"></option><option value="US30"></option><option value="BTCUSDT"></option><option value="ETHUSDT"></option><option value="SOLUSDT"></option></datalist>
-        <datalist id="lotList"><option value="0,05"></option><option value="0,1"></option><option value="0,2"></option><option value="0,3"></option><option value="0,4"></option><option value="0,5"></option></datalist>
+        <datalist id="lotList"><option value="0,05"></option><option value="0,1"></option><option value="0,2"></option><option value="0,3"></option><option value="0,4"></option><option value="0,5"></option><option value="1"></option><option value="2"></option><option value="3"></option></datalist>
       </form>
     </div>
   </div>
@@ -971,7 +972,7 @@ function initForm(){
   document.getElementById("f_session").value = guessSession();
   updateClock();
   document.getElementById("symChips").innerHTML = ["XAUUSD","US30","BTCUSDT","ETHUSDT"].map(s=>`<span class="chip-pick" onclick="pickSym('${s}')">${s}</span>`).join("");
-  document.getElementById("lotChips").innerHTML = ["0,05","0,1","0,2","0,3","0,4","0,5"].map(l=>`<span class="chip-pick" onclick="pickLot('${l}')">${l}</span>`).join("");
+  document.getElementById("lotChips").innerHTML = ["0,05","0,1","0,2","0,3","0,4","0,5","1","2","3"].map(l=>`<span class="chip-pick" onclick="pickLot('${l}')">${l}</span>`).join("");
   document.getElementById("segs").innerHTML =
     `<div class="seg ${filter===''?'active':''}" onclick="setFilter('')">Alle</div>` +
     STYLES.map(s=>`<div class="seg ${filter==='s:'+s.id?'active':''}" onclick="setFilter('s:${s.id}')">${escapeHtml(s.name)}</div>`).join("") +
