@@ -1,5 +1,5 @@
 /* ============================================================
-   Trade Reflect – Verbindung zur Supabase-Datenbank
+   Kings Club Trades Monitor – Verbindung zur Supabase-Datenbank
    ------------------------------------------------------------
    Beide Werte findest du in deinem Supabase-Projekt unter:
    Project Settings (Zahnrad links unten) → API

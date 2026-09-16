@@ -1,5 +1,5 @@
 -- ============================================================
--- Trade Reflect – Datenbank-Einrichtung für Supabase
+-- Kings Club Trades Monitor – Datenbank-Einrichtung für Supabase
 -- ------------------------------------------------------------
 -- Einmal komplett in den SQL Editor von Supabase kopieren
 -- (linke Leiste → "SQL Editor" → "New query") und auf "Run" klicken.

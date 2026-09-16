@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trade Reflect · Trading Dashboard</title>
+<title>Kings Club Trades Monitor · Trading Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -608,7 +608,7 @@
 <!-- LOGIN / REGISTRIERUNG -->
 <div class="overlay" id="authOverlay">
   <div class="modal">
-    <div class="authlogo"><div class="logo">📈</div><div><h2>Trade Reflect</h2><div class="tag">Dein persönliches Trading-Dashboard</div></div></div>
+    <div class="authlogo"><div class="logo">📈</div><div><h2>Kings Club Trades Monitor</h2><div class="tag">Dein persönliches Trading-Dashboard</div></div></div>
     <div class="authwarn" id="authConfigWarn" style="display:none">⚠︎ Die Datei <b>config.js</b> ist noch nicht ausgefüllt. Bitte Supabase-URL und Anon-Key eintragen (siehe ANLEITUNG.md).</div>
 
     <div id="authForms">
@@ -1506,7 +1506,7 @@ async function saveAccountSettings(){
   if(data && data.user) user=data.user;
   try{ await sb.from("profiles").upsert({ id:user.id, display_name:name }, { onConflict:"id" }); }catch(e){}
   document.getElementById("acct_name").textContent=name; document.getElementById("acct_newpass").value="";
-  document.getElementById("appTitle").textContent = name+"s Trading Dashboard"; document.title = name+"s Trading Dashboard · Trade Reflect";
+  document.getElementById("appTitle").textContent = name+"s Trading Dashboard"; document.title = name+"s Trading Dashboard · Kings Club Trades Monitor";
   const ab=document.getElementById("acctBtn"); if(ab) ab.textContent="◉ "+name;
   msg(pass ? "✅ Name und Passwort gespeichert." : "✅ Gespeichert.");
 }
@@ -1641,7 +1641,7 @@ function onLogin(){
   if(localStorage.getItem(OWNER_KEY)!==user.id){ resetLocalData(); localStorage.setItem(OWNER_KEY, user.id); }
   const nm=displayName(); document.getElementById("appTitle").textContent = nm ? nm+"s Trading Dashboard" : "Trading Dashboard";
   const ab=document.getElementById("acctBtn"); if(ab){ ab.style.display=""; ab.textContent="◉ "+(nm||"Konto"); }
-  document.title = (nm ? nm+"s " : "") + "Trading Dashboard · Trade Reflect";
+  document.title = (nm ? nm+"s " : "") + "Trading Dashboard · Kings Club Trades Monitor";
   ensureAccountsForTrades(); ensureStylesForTrades(); dedupeIds(); initForm(); render(); setStatus("Verbunden","ok"); cloudPull(true);
 }
 function initAuth(){

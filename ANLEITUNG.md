@@ -1,4 +1,4 @@
-# Trade Reflect – Team-Version einrichten
+# Kings Club Trades Monitor – Team-Version einrichten
 
 Das Dashboard läuft als Website. Jeder Kollege legt sich selbst ein Konto an
 (E-Mail + Passwort) und sieht nur seine eigenen Trades.
