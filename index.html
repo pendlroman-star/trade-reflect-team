@@ -535,7 +535,7 @@
 
           <div class="ef c3">
             <span class="ef-lbl">Symbol</span>
-            <input type="text" id="f_symbol" list="symbolList" placeholder="XAUUSD" oninput="markChips('symChips','f_symbol');updateRisk()" required>
+            <input type="text" id="f_symbol" list="symbolList" value="XAUUSD" placeholder="XAUUSD" oninput="markChips('symChips','f_symbol');updateRisk()" required>
             <div class="chips" id="symChips"></div>
           </div>
           <div class="ef c3">
@@ -1041,7 +1041,8 @@ function addTrade(e){
     note: document.getElementById("f_note").value.trim()
   });
   save();
-  ["f_symbol","f_pnl","f_lot","f_note","f_entry","f_sl"].forEach(id=>document.getElementById(id).value="");
+  ["f_pnl","f_lot","f_note","f_entry","f_sl"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("f_symbol").value="XAUUSD";
   document.getElementById("f_reason").value="";
   document.getElementById("f_slhit").checked=false;
   document.getElementById("f_tphit").checked=false;
@@ -2079,6 +2080,7 @@ function applyDemoData(d){
     const arr = Array.isArray(d) ? d : (Array.isArray(d.trades) ? d.trades : []);
     trades = arr.map(t=>({...t}));
     ACCOUNTS = (d && Array.isArray(d.accounts) && d.accounts.length) ? d.accounts.map(normAccount) : DEFAULT_ACCOUNTS.map(normAccount);
+    STYLES   = (d && Array.isArray(d.styles) && d.styles.length) ? d.styles.map(normStyle) : DEFAULT_STYLES.map(x=>({...x}));
     rules = (d && Array.isArray(d.rules) && d.rules.length===3) ? d.rules.map((x,i)=> typeof x==="string"?{h:x,s:""}:{h:(x&&x.h)||DEFAULT_RULES[i].h,s:(x&&x.s)||""}) : DEFAULT_RULES.map(r=>({...r}));
     dayNotes = (d && d.dayNotes && typeof d.dayNotes==="object" && !Array.isArray(d.dayNotes)) ? {...d.dayNotes} : {};
     fees = (d && Array.isArray(d.fees)) ? d.fees : [];
@@ -2111,7 +2113,7 @@ function toggleMenu(){ document.getElementById("dataPop").classList.toggle("show
 function closeMenu(){ document.getElementById("dataPop").classList.remove("show"); }
 function openEntry(){
   document.getElementById("entryOverlay").classList.add("show");
-  setTimeout(()=>{ const el=document.getElementById("f_symbol"); if(el) el.focus(); },150);
+  setTimeout(()=>{ const el=document.getElementById("f_pnl"); if(el) el.focus(); },150);
 }
 /* ---------- Ansichten (Heute / Analyse / Kalender / Historie) ---------- */
 let currentView = "heute";
