@@ -90,6 +90,7 @@ Wenn du später etwas am Code änderst: In GitHub Desktop **Commit to main** und
 3. **⚙︎ Konten**: eigene Trading-Konten anlegen (Name, Startkapital, optional Tagesziel und Verlustlimit).
 4. **◈ Kategorien**: sagen, woher ein Trade kommt. Vorgegeben sind „Eigene Trades", „Signal XYZ", „Signal Coinminds" und „Signal Claude". Jeder kann Kategorien umbenennen, löschen oder neue anlegen.
 5. **＋ Trade eintragen**: Konto und Kategorie wählen, Ergebnis eintragen. Alles wird automatisch in der eigenen Cloud-Datenbank gespeichert.
+6. **Namensknopf oben rechts** öffnet „Mein Konto“: Anzeigename oder Passwort ändern, abmelden oder das eigene Konto samt allen Daten endgültig löschen.
 
 ---
 

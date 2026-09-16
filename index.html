@@ -241,6 +241,10 @@
   .acctinfo{display:flex; flex-direction:column; gap:4px; background:var(--glass2); border:1px solid var(--stroke2); border-radius:14px; padding:14px 16px; margin-bottom:18px}
   .acctinfo .nm{font-weight:600; font-size:15px}
   .acctinfo .em{font-size:12.5px; color:var(--muted)}
+  .dangerzone{margin-top:26px; padding-top:18px; border-top:1px solid var(--stroke2)}
+  .dz-title{font-size:11px; color:var(--red); text-transform:uppercase; letter-spacing:.1em; font-weight:700; margin-bottom:6px}
+  .dz-text{font-size:12.5px; color:var(--muted); line-height:1.5; margin-bottom:10px}
+  .dz-text b{color:var(--text)}
 
   .lossgrid{display:grid; grid-template-columns:1.5fr 1fr; gap:16px}
   @media(max-width:760px){ .lossgrid{grid-template-columns:1fr} }
@@ -530,6 +534,16 @@
     <label>Neues Passwort<input type="password" id="acct_newpass" placeholder="leer lassen, wenn es bleiben soll" autocomplete="new-password"></label>
     <div class="row"><button class="primary" onclick="saveAccountSettings()">✓ Speichern</button><button class="danger" onclick="authLogout()">⏻ Abmelden</button></div>
     <div class="msg" id="s_msg"></div>
+    <div class="dangerzone">
+      <div class="dz-title">Konto löschen</div>
+      <div class="dz-text">Löscht dein Login und <b>alle</b> deine Trades, Konten, Kategorien und Notizen endgültig. Das lässt sich nicht rückgängig machen. Vorher unter „Daten" ein Backup sichern.</div>
+      <button class="ghost tiny" id="dz_start" onclick="dzStart()">Konto löschen …</button>
+      <div id="dz_confirm" style="display:none;margin-top:12px">
+        <label>Zur Bestätigung deine E-Mail-Adresse eingeben<input type="email" id="dz_email" placeholder="name@beispiel.at" autocomplete="off"></label>
+        <div class="row"><button class="danger" onclick="deleteOwnAccount()">Ja, endgültig löschen</button><button class="ghost" onclick="dzCancel()">Abbrechen</button></div>
+        <div class="msg" id="dz_msg"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1416,7 +1430,7 @@ function openSync(){
   document.getElementById("acct_name").textContent = displayName() || "–";
   document.getElementById("acct_email").textContent = (user && user.email) || "–";
   document.getElementById("acct_newname").value = displayName();
-  document.getElementById("acct_newpass").value = ""; msg("");
+  document.getElementById("acct_newpass").value = ""; msg(""); dzCancel();
   document.getElementById("syncOverlay").classList.add("show");
 }
 async function saveAccountSettings(){
@@ -1527,6 +1541,21 @@ async function authSetNewPassword(){
   if(error){ amsg("⚠︎ "+deErr(error)); return; }
   recovering=false; document.getElementById("authRecovery").style.display="none"; document.getElementById("authForms").style.display="";
   amsg(""); hideAuth(); onLogin();
+}
+function dzStart(){ document.getElementById("dz_start").style.display="none"; document.getElementById("dz_confirm").style.display=""; document.getElementById("dz_email").value=""; document.getElementById("dz_msg").textContent=""; }
+function dzCancel(){ document.getElementById("dz_start").style.display=""; document.getElementById("dz_confirm").style.display="none"; }
+async function deleteOwnAccount(){
+  const m=document.getElementById("dz_msg");
+  if(!connected()){ m.textContent="⚠︎ Nicht angemeldet."; return; }
+  const typed=document.getElementById("dz_email").value.trim().toLowerCase();
+  if(typed!==(user.email||"").toLowerCase()){ m.textContent="⚠︎ Die E-Mail-Adresse stimmt nicht mit deinem Konto überein."; return; }
+  m.textContent="Konto wird gelöscht…";
+  const { error } = await sb.rpc("delete_own_account");
+  if(error){ m.textContent="⚠︎ Löschen fehlgeschlagen: "+deErr(error)+(/function|schema cache|not find/i.test(error.message)?" – Der Datenbank-Baustein delete_own_account fehlt noch (Datei supabase-konto-loeschen.sql bei Supabase ausführen).":""); return; }
+  try{ await sb.auth.signOut(); }catch(e){}
+  resetLocalData(); localStorage.removeItem(OWNER_KEY);
+  alert("Dein Konto und alle Daten wurden gelöscht.");
+  location.href = appUrl();
 }
 async function authLogout(){
   clearTimeout(pushTimer);
