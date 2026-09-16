@@ -322,9 +322,7 @@
     </div>
     <div class="spacer"></div>
     <div class="syncpill" id="weekPill" title="Ergebnis der aktuellen Woche (Mo–So)">Woche –</div>
-    <div class="syncpill"><span class="dot" id="syncDot"></span><span id="syncStatus">Nicht verbunden</span></div>
     <div class="toolbar">
-      <button class="primary" onclick="openEntry()">＋ Trade eintragen</button>
       <button class="ghost" onclick="openAccounts()">⚙︎ Konten</button>
       <button class="ghost" onclick="openStyles()">◈ Kategorien</button>
       <div class="menu" id="dataMenu">
@@ -338,6 +336,7 @@
         </div>
       </div>
       <input type="file" id="importFile" accept=".json,.csv" style="display:none" onchange="importFile(event)">
+      <button class="primary" onclick="openEntry()">＋ Trade eintragen</button>
     </div>
   </div>
 </header>
@@ -524,10 +523,10 @@
     <button class="x" onclick="closeSync()">✕</button>
     <h2>◉ Mein Konto</h2>
     <p class="lead">Deine Trades, Konten, Regeln und Tagesnotizen werden automatisch in deiner persönlichen Cloud-Datenbank gespeichert. Auf jedem Gerät einfach anmelden – alles ist da.</p>
-    <div class="acctinfo"><div class="nm" id="acct_name">–</div><div class="em" id="acct_email">–</div></div>
+    <div class="acctinfo"><div class="nm" id="acct_name">–</div><div class="em" id="acct_email">–</div><div class="em" style="display:flex;align-items:center;gap:7px;margin-top:4px"><span class="dot" id="syncDot"></span><span id="syncStatus">Nicht verbunden</span></div></div>
     <label class="chk"><input type="checkbox" id="s_auto" checked onchange="sync.auto=this.checked"> Automatisch speichern (empfohlen)</label>
     <div class="row"><button onclick="cloudPush(false)">⬆︎ Jetzt speichern</button><button onclick="cloudPull(false)">⬇︎ Neu laden</button></div>
-    <div class="row" style="margin-top:14px"><button class="ghost" onclick="authChangePassword()">🔑 Passwort ändern</button><button class="ghost" onclick="authLogout()">Abmelden</button></div>
+    <div class="row" style="margin-top:14px"><button class="ghost" onclick="authChangePassword()">Passwort ändern</button><button class="ghost" onclick="authLogout()">Abmelden</button></div>
     <div class="msg" id="s_msg"></div>
   </div>
 </div>
@@ -1407,7 +1406,7 @@ const sb = (SB_READY && window.supabase) ? window.supabase.createClient(window.S
 let user = null; let pushTimer = null; let sync = { auto:true }; let recovering = false; let authMode = "login";
 function connected(){ return !!(sb && user); }
 function cloudPayload(){ return { trades, accounts: ACCOUNTS, styles: STYLES, rules, dayNotes, fees }; }
-function setStatus(text, state){ document.getElementById("syncStatus").textContent=text; document.getElementById("syncDot").className="dot"+(state?(" "+state):""); }
+function setStatus(text, state){ const t=document.getElementById("syncStatus"), d=document.getElementById("syncDot"); if(t) t.textContent=text; if(d) d.className="dot"+(state?(" "+state):""); }
 function msg(t){ const m=document.getElementById("s_msg"); if(m) m.textContent=t; }
 function amsg(t, ok){ const m=document.getElementById("a_msg"); if(m){ m.textContent=t; m.style.color = ok ? "var(--green)" : (t.startsWith("⚠︎")||t.startsWith("Fehler") ? "var(--red)" : "var(--muted)"); } }
 function displayName(){ return (user && user.user_metadata && user.user_metadata.display_name) || (user && user.email ? user.email.split("@")[0] : ""); }
