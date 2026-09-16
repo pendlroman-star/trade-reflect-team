@@ -2122,11 +2122,11 @@ function showView(name){
   currentView=name;
   document.querySelectorAll(".view").forEach(v=>v.classList.toggle("active", v.id==="view-"+name));
   document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on", b.dataset.view===name));
-  try{ localStorage.setItem("tr_view", name); }catch(e){}
+  if(!DEMO){ try{ localStorage.setItem("tr_view", name); }catch(e){} }
   if(name==="analyse") setTimeout(renderChart, 0);   /* Diagramm braucht sichtbare Fläche */
   window.scrollTo({top:0, behavior:"instant"});
 }
-(function(){ let v="heute"; try{ v=localStorage.getItem("tr_view")||"heute"; }catch(e){} if(document.getElementById("view-"+v)){ currentView=v; document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active", x.id==="view-"+v)); document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on", b.dataset.view===v)); } })();
+(function(){ let v="heute"; if(!DEMO){ try{ v=localStorage.getItem("tr_view")||"heute"; }catch(e){} } if(document.getElementById("view-"+v)){ currentView=v; document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active", x.id==="view-"+v)); document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on", b.dataset.view===v)); } })();
 /* ---------- Hell / Dunkel ---------- */
 function setTheme(t){
   if(t==="dark") document.documentElement.dataset.theme="dark"; else delete document.documentElement.dataset.theme;
