@@ -76,9 +76,9 @@ Wenn du später etwas am Code änderst: In GitHub Desktop **Commit to main** und
 
 ## Teil 3 – Deine eigenen Daten übernehmen
 
-1. Öffne dein **altes** Dashboard (die bisherige `index.html`), klicke auf **⇅ Daten → ⬇︎ Backup (JSON)**. Eine Datei wird heruntergeladen.
+1. Öffne dein **altes** Dashboard (die bisherige `index.html`), klicke auf **Daten → Backup (JSON)**. Eine Datei wird heruntergeladen.
 2. Öffne das **neue** Dashboard im Browser, registriere dich und melde dich an.
-3. **⇅ Daten → ⬆︎ Import (CSV / JSON)** → die Backup-Datei wählen → **Ersetzen** bestätigen.
+3. Im neuen Dashboard **Verwalten → Import (CSV / JSON)** → die Backup-Datei wählen → **Ersetzen** bestätigen.
 4. Deine Trades, Konten, Regeln und Notizen sind jetzt in deiner Cloud-Datenbank. Der Status oben rechts zeigt „Gespeichert".
 
 ---
@@ -87,10 +87,12 @@ Wenn du später etwas am Code änderst: In GitHub Desktop **Commit to main** und
 
 1. Adresse öffnen, auf **Registrieren** klicken, Anzeigename, E-Mail und Passwort eingeben.
 2. Link in der Bestätigungs-Mail anklicken, dann anmelden.
-3. **⚙︎ Konten**: eigene Trading-Konten anlegen (Name, Startkapital, optional Tagesziel und Verlustlimit).
-4. **◈ Kategorien**: sagen, woher ein Trade kommt. Vorgegeben sind „Eigene Trades", „Signal XYZ", „Signal Coinminds" und „Signal Claude". Jeder kann Kategorien umbenennen, löschen oder neue anlegen.
-5. **＋ Trade eintragen**: Konto und Kategorie wählen, Ergebnis eintragen. Alles wird automatisch in der eigenen Cloud-Datenbank gespeichert.
-6. **Namensknopf oben rechts** öffnet „Mein Konto“: Anzeigename oder Passwort ändern, abmelden oder das eigene Konto samt allen Daten endgültig löschen.
+3. **Verwalten → Konten**: eigene Trading-Konten anlegen (Name, Startkapital, optional Tagesziel und Verlustlimit). Der Knopf „Konten verwalten“ in der Ansicht „Heute“ führt ebenfalls dorthin.
+4. **Verwalten → Kategorien**: sagen, woher ein Trade kommt. Vorgegeben sind „Eigene Trades", „Signal XYZ", „Signal Coinminds" und „Signal Claude". Jeder kann Kategorien umbenennen, löschen oder neue anlegen.
+5. **＋ Trade eintragen** (oben rechts, öffnet ein Fenster): Konto und Kategorie wählen, Ergebnis eintragen. Alles wird automatisch in der eigenen Cloud-Datenbank gespeichert.
+6. **Namensknopf oben rechts** öffnet „Mein Konto“: Anzeigename oder Passwort ändern, dunkles Design einschalten, abmelden oder das eigene Konto samt allen Daten endgültig löschen.
+
+Das Dashboard hat vier Ansichten, umschaltbar über die Reiter in der Kopfzeile: **Heute** (Tagesstand, Konten, Woche, Regeln), **Analyse** (Kategorie-Ranking, Auswertung, Verlust-Analyse, Kurve), **Kalender** und **Historie**.
 
 ---
 
