@@ -333,9 +333,11 @@
           <button onclick="exportCSV();closeMenu()">⬇︎ CSV exportieren</button>
           <button onclick="exportJSON();closeMenu()">⬇︎ Backup (JSON)</button>
           <button onclick="document.getElementById('importFile').click();closeMenu()">⬆︎ Import (CSV / JSON)</button>
+          <button onclick="closeMenu();authLogout()" style="color:var(--red)">⏻ Abmelden</button>
         </div>
       </div>
       <input type="file" id="importFile" accept=".json,.csv" style="display:none" onchange="importFile(event)">
+      <button class="ghost" id="acctBtn" onclick="openSync()" title="Mein Konto · Abmelden" style="display:none">◉ Konto</button>
       <button class="primary" onclick="openEntry()">＋ Trade eintragen</button>
     </div>
   </div>
@@ -526,7 +528,7 @@
     <div class="acctinfo"><div class="nm" id="acct_name">–</div><div class="em" id="acct_email">–</div></div>
     <label>Anzeigename<input type="text" id="acct_newname" placeholder="z.B. Roman" autocomplete="nickname"><span class="hint">So erscheinst du später im Team-Ranking.</span></label>
     <label>Neues Passwort<input type="password" id="acct_newpass" placeholder="leer lassen, wenn es bleiben soll" autocomplete="new-password"></label>
-    <div class="row"><button class="primary" onclick="saveAccountSettings()">✓ Speichern</button><button class="ghost" onclick="authLogout()">Abmelden</button></div>
+    <div class="row"><button class="primary" onclick="saveAccountSettings()">✓ Speichern</button><button class="danger" onclick="authLogout()">⏻ Abmelden</button></div>
     <div class="msg" id="s_msg"></div>
   </div>
 </div>
@@ -1430,6 +1432,7 @@ async function saveAccountSettings(){
   try{ await sb.from("profiles").upsert({ id:user.id, display_name:name }, { onConflict:"id" }); }catch(e){}
   document.getElementById("acct_name").textContent=name; document.getElementById("acct_newpass").value="";
   document.getElementById("appTitle").textContent = name+"s Trading Dashboard"; document.title = name+"s Trading Dashboard · Trade Reflect";
+  const ab=document.getElementById("acctBtn"); if(ab) ab.textContent="◉ "+name;
   msg(pass ? "✅ Name und Passwort gespeichert." : "✅ Gespeichert.");
 }
 function closeSync(){ document.getElementById("syncOverlay").classList.remove("show"); }
@@ -1547,6 +1550,7 @@ function deErr(e){
 function onLogin(){
   if(localStorage.getItem(OWNER_KEY)!==user.id){ resetLocalData(); localStorage.setItem(OWNER_KEY, user.id); }
   const nm=displayName(); document.getElementById("appTitle").textContent = nm ? nm+"s Trading Dashboard" : "Trading Dashboard";
+  const ab=document.getElementById("acctBtn"); if(ab){ ab.style.display=""; ab.textContent="◉ "+(nm||"Konto"); }
   document.title = (nm ? nm+"s " : "") + "Trading Dashboard · Trade Reflect";
   ensureAccountsForTrades(); ensureStylesForTrades(); dedupeIds(); initForm(); render(); setStatus("Verbunden","ok"); cloudPull(true);
 }
