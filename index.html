@@ -736,7 +736,7 @@ function ensureAccountsForTrades(){
   let added=false;
   trades.forEach(t=>{
     if(!t.account || ACCOUNTS.some(a=>a.id===t.account)) return;
-    const l = LEGACY_ACCOUNT_NAMES[t.account] || { name:"Konto "+t.account.replace(/^acc_/,"").toUpperCase().slice(0,6), color:ACCOUNT_PALETTE[ACCOUNTS.length % ACCOUNT_PALETTE.length] };
+    const l = LEGACY_ACCOUNT_NAMES[t.account] || { name: /^acc_[a-z0-9]{6,9}$/.test(t.account) ? "Konto "+t.account.replace(/^acc_/,"").toUpperCase().slice(0,6) : t.account.replace(/^acc_/,"").replace(/_/g," "), color:ACCOUNT_PALETTE[ACCOUNTS.length % ACCOUNT_PALETTE.length] };
     ACCOUNTS.push(normAccount({ id:t.account, capital:100000, ...l })); added=true;
   });
   if(added) localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(ACCOUNTS));
@@ -1606,7 +1606,8 @@ function parseCSV(text){
   const slcol = col("sl-hit")>=0?col("sl-hit"):(col("slhit")>=0?col("slhit"):col("sl hit"));
   const tpcol = col("tp-hit")>=0?col("tp-hit"):(col("tphit")>=0?col("tphit"):col("tp hit"));
   const ci = { date:col("datum"), acc:col("konto"), style:(col("kategorie")>=0?col("kategorie"):col("stil")), sym:col("symbol"), lot:col("lot"), dir:col("richtung"), entry:col("entry"), sl:col("sl"), risk:col("risiko"), pnl:col("usd"), slhit:slcol, tphit:tpcol, session:col("session"), reason:col("grund"), note:col("notiz") };
-  const findAcc = v => { v=(v||"").trim(); const a=ACCOUNTS.find(x=>x.name.toLowerCase()===v.toLowerCase()||x.id===v.toLowerCase()); return a?a.id:v; };
+  const findAcc = v => { v=(v||"").trim(); if(!v) return ACCOUNTS[0]?ACCOUNTS[0].id:"main"; const a=ACCOUNTS.find(x=>x.name.toLowerCase()===v.toLowerCase()||x.id===v.toLowerCase()); if(a) return a.id;
+    const id="acc_"+v.toLowerCase().replace(/[^a-z0-9]+/g,"_").slice(0,24); if(!ACCOUNTS.some(x=>x.id===id)){ ACCOUNTS.push(normAccount({ id, name:v, sub:"importiert", capital:100000, color:ACCOUNT_PALETTE[ACCOUNTS.length % ACCOUNT_PALETTE.length] })); saveAccounts(); } return id; };
   const findStyle = v => { v=(v||"").trim(); if(!v) return STYLES[0]?STYLES[0].id:"eigen"; const s=STYLES.find(x=>x.name.toLowerCase()===v.toLowerCase()||x.id===v.toLowerCase()); if(s) return s.id;
     const id="st_"+v.toLowerCase().replace(/[^a-z0-9]+/g,"_").slice(0,24); if(!STYLES.some(x=>x.id===id)) STYLES.push({ id, name:v, color:STYLE_PALETTE[STYLES.length % STYLE_PALETTE.length] }); return id; };
   const num = v => { if(v==null) return null; v=(""+v).trim(); if(!v) return null; if(v.includes(",")&&v.includes(".")) v=v.replace(/\./g,"").replace(",","."); else if(v.includes(",")) v=v.replace(",","."); const n=parseFloat(v); return isNaN(n)?null:n; };
