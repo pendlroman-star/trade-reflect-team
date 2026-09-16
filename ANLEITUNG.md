@@ -83,6 +83,16 @@ Wenn du später etwas am Code änderst: In GitHub Desktop **Commit to main** und
 
 ---
 
+## So arbeiten Kollegen mit dem Dashboard
+
+1. Adresse öffnen, auf **Registrieren** klicken, Anzeigename, E-Mail und Passwort eingeben.
+2. Link in der Bestätigungs-Mail anklicken, dann anmelden.
+3. **⚙︎ Konten**: eigene Trading-Konten anlegen (Name, Startkapital, optional Tagesziel und Verlustlimit).
+4. **◈ Kategorien**: sagen, woher ein Trade kommt. Vorgegeben sind „Eigene Trades", „Signal XYZ", „Signal Coinminds" und „Signal Claude". Jeder kann Kategorien umbenennen, löschen oder neue anlegen.
+5. **＋ Trade eintragen**: Konto und Kategorie wählen, Ergebnis eintragen. Alles wird automatisch in der eigenen Cloud-Datenbank gespeichert.
+
+---
+
 ## Später: Team-Ranking
 
 Die Datenbank ist dafür schon vorbereitet (Sicht `trades_flat` mit Anzeigenamen).
