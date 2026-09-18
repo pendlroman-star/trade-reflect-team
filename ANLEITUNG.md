@@ -96,6 +96,17 @@ Das Dashboard hat vier Ansichten, umschaltbar über die Reiter in der Kopfzeile:
 
 ---
 
+## Team-Seite (freiwillig)
+
+Das **Personen-Gruppen-Symbol** oben rechts öffnet die Team-Seite. Sie zeigt je Trader eine Karte mit Foto, Tagesergebnis, Woche, Monat, Gesamt, Verlaufskurve und den letzten Trades. Ein Klick auf eine Karte öffnet die Details.
+
+- **Aktivieren:** Personen-Symbol → „Mein Konto“ → Haken bei **„Auf der Team-Seite sichtbar sein“** → Speichern. Dort lässt sich auch ein **Profilfoto** hochladen und wählen, ob Beträge in USD oder nur in Prozent gezeigt werden.
+- **Geteilt wird nur eine Kurzfassung:** Name, Foto, Ergebnisse, Trefferquote, Kategorien, die letzten 30 Trades. Notizen, Regeln und Kontonamen bleiben privat.
+- **Gegenseitigkeit:** Nur wer selbst teilt, sieht die anderen. Haken entfernen und speichern löscht die eigene Karte sofort.
+- **Einmalige Einrichtung durch den Betreiber:** Datei `supabase-team.sql` im SQL Editor von Supabase ausführen.
+
+---
+
 ## Später: Team-Ranking
 
 Die Datenbank ist dafür schon vorbereitet (Sicht `trades_flat` mit Anzeigenamen).
