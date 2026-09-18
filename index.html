@@ -10,7 +10,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
-<script>(function(){ try{ var t=localStorage.getItem("tr_theme"); if(t==="dark") document.documentElement.dataset.theme="dark"; }catch(e){} })();</script>
 <style>
   :root{
     color-scheme:light;
@@ -38,23 +37,6 @@
     --font-mono:var(--font-sans);
     --onchip:#FAF9F6;
   }
-  html[data-theme="dark"]{
-    color-scheme:dark;
-    --bar1:#9FB8D0;
-    --bg:#0A1A2B;
-    --text:#F6F3EE; --body:#D9DEE3; --muted:#B4BEC8; --faint:#8794A0;
-    --glass:#11263A; --glass2:#18314A;
-    --stroke:rgba(250,249,246,.16); --stroke2:rgba(250,249,246,.09);
-    --green:#79C4A9; --red:#E59A8A; --amber:#E8C768; --blue:#9FB8D0; --violet:#78B8AC; --accent:#78B8AC;
-    --posfill:#4A9A80; --negfill:#C06A5C; --posbg:rgba(121,196,169,.14); --negbg:rgba(229,154,138,.14);
-    --signal:#DBB24B; --signalbg:rgba(219,178,75,.22); --calm:rgba(167,181,163,.10); --calmline:rgba(167,181,163,.30);
-    --grad:#F6F3EE; --primary-hover:#FFFFFF; --onprimary:#0E2A47;
-    --shadow:0 1px 2px rgba(0,0,0,.3), 0 14px 36px -20px rgba(0,0,0,.6);
-    --hover:rgba(250,249,246,.07); --track:rgba(250,249,246,.10); --rowline:rgba(250,249,246,.07); --midline:rgba(250,249,246,.25);
-    --panel:#12283C; --inputbg:rgba(250,249,246,.06); --headbg:rgba(10,26,43,.86); --thead:#15304A;
-    --scroll:rgba(250,249,246,.2); --overlay:rgba(3,9,16,.62);
-    --onchip:#0E2A47;
-  }
   *{box-sizing:border-box; scrollbar-width:thin; scrollbar-color:var(--scroll) transparent}
   ::-webkit-scrollbar{width:8px; height:8px}
   ::-webkit-scrollbar-track{background:transparent}
@@ -72,10 +54,6 @@
   .syncpill{background:var(--glass); border-color:var(--stroke2); color:var(--muted)}
   button{background:var(--glass)} button.ghost{background:transparent}
   .menu-pop{border-color:var(--stroke2)}
-  html[data-theme="dark"] .nav{background:rgba(250,249,246,.06)}
-  html[data-theme="dark"] .chip-pick.on, html[data-theme="dark"] .seg.active, html[data-theme="dark"] .toggle button.on{background:#F6F3EE; color:#0E2A47}
-  html[data-theme="dark"] .lbrank.g2, html[data-theme="dark"] .lbrank.g3{background:rgba(250,249,246,.14); color:#F6F3EE; border:none}
-  html[data-theme="dark"] .steps li::before{background:#F6F3EE; color:#0E2A47}
   body{
     background:var(--bg); color:var(--text);
     font-family:var(--font-sans);
@@ -115,13 +93,17 @@
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 
   .toolbar{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+  .ico{width:18px; height:18px; flex:none; fill:none; stroke:currentColor; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round}
+  .icon-btn{width:38px; height:38px; padding:0; justify-content:center; border-radius:11px; color:var(--text)}
+  a.linkbtn{display:inline-flex; align-items:center; justify-content:center; border:1px solid var(--stroke); background:transparent; text-decoration:none; transition:.18s ease}
+  a.linkbtn:hover{background:var(--hover); transform:translateY(-1px)}
+  .menu-pop .ico{width:16px; height:16px; color:var(--muted); margin-right:4px}
+  .menu-pop button[style*="--red"] .ico{color:var(--red)}
   .nav{display:flex; gap:3px; background:var(--glass2); border:1px solid var(--stroke2); border-radius:100px; padding:4px}
   .nav button{background:transparent; border:none; border-radius:100px; padding:8px 18px; font-size:13px; color:var(--muted); font-weight:500}
   .nav button:hover{background:var(--hover); transform:none; color:var(--text)}
   .nav button.on{background:var(--glass); color:var(--text); font-weight:600; box-shadow:0 1px 3px rgba(14,42,71,.14)}
-  html[data-theme="dark"] .nav button.on{background:rgba(250,249,246,.1); box-shadow:none}
   @media(max-width:1240px){ .nav button{padding:8px 12px} .headin{gap:10px} }
-  @media(max-width:1130px) and (min-width:721px){ #weekPill{display:none} .toolbar button{padding:9px 11px} }
   .view{display:none} .view.active{display:block; animation:fade .18s ease}
   .view > section:first-child, .view > .topgrid{margin-top:26px}
   #entryOverlay .modal{max-width:840px}
@@ -151,7 +133,6 @@
   .sec-head .note{font-size:12.5px; color:var(--muted); font-weight:400}
 
   .card{background:var(--glass); border:1px solid var(--stroke2); border-radius:var(--radius); box-shadow:var(--shadow)}
-  html[data-theme="dark"] .card{backdrop-filter:blur(14px)}
 
   .topgrid{display:grid; grid-template-columns:1.1fr .9fr; gap:16px; margin-top:24px}
   .topgrid > .card{margin-top:0}
@@ -404,24 +385,25 @@
       <button data-view="historie" onclick="showView('historie')">Historie</button>
     </nav>
     <div class="spacer"></div>
-    <div class="syncpill" id="weekPill" title="Ergebnis der aktuellen Woche (Mo–So)">Woche –</div>
     <div class="toolbar">
+      <a class="icon-btn linkbtn" href="https://kingsclub.trade" target="_blank" rel="noopener" title="Zur Goldanalyse (öffnet in neuem Fenster)" aria-label="Zur Goldanalyse"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg></a>
       <div class="menu" id="dataMenu">
-        <button class="ghost" onclick="toggleMenu()">Verwalten ▾</button>
+        <button class="ghost icon-btn" onclick="toggleMenu()" title="Verwalten" aria-label="Verwalten"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h8M16 6h4M4 12h2M10 12h10M4 18h10M18 18h2"/><circle cx="14" cy="6" r="2"/><circle cx="8" cy="12" r="2"/><circle cx="16" cy="18" r="2"/></svg></button>
         <div class="menu-pop" id="dataPop">
-          <button onclick="openAccounts();closeMenu()">⚙︎ Konten</button>
-          <button onclick="openStyles();closeMenu()">◈ Kategorien</button>
-          <button onclick="openFees();closeMenu()">＄ Gebühr erfassen</button>
+          <button onclick="openAccounts();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16 14.500h2"/></svg>Konten</button>
+          <button onclick="openStyles();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.500V4h7.500L21 14.500 14.500 21 3 11.500z"/><circle cx="7.500" cy="8" r="1.200"/></svg>Kategorien</button>
+          <button onclick="openFees();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M14.800 9.300c-.5-.9-1.500-1.400-2.800-1.400-1.700 0-2.900.9-2.900 2.100 0 2.900 5.900 1.400 5.900 4.200 0 1.300-1.300 2.200-3 2.200-1.400 0-2.500-.600-3-1.600M12 6v1.900M12 16.400V18"/></svg>Gebühr erfassen</button>
           <div style="height:1px;background:var(--stroke2);margin:4px 6px"></div>
-          <button onclick="openSync();closeMenu()">◉ Mein Konto</button>
-          <button onclick="exportCSV();closeMenu()">⬇︎ CSV exportieren</button>
-          <button onclick="exportJSON();closeMenu()">⬇︎ Backup (JSON)</button>
-          <button onclick="document.getElementById('importFile').click();closeMenu()">⬆︎ Import (CSV / JSON)</button>
-          <button onclick="closeMenu();authLogout()" style="color:var(--red)">⏻ Abmelden</button>
+          <button onclick="exportCSV();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10.500l5 5 5-5M5 20h14"/></svg>CSV exportieren</button>
+          <button onclick="exportJSON();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10.500l5 5 5-5M5 20h14"/></svg>Backup (JSON)</button>
+          <button onclick="document.getElementById('importFile').click();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V5M7 9.500l5-5 5 5M5 20h14"/></svg>Import (CSV / JSON)</button>
+          <div style="height:1px;background:var(--stroke2);margin:4px 6px"></div>
+          <button onclick="openSync();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.4-3.8 4.6-6 8-6s6.600 2.200 8 6"/></svg>Mein Konto</button>
+          <button onclick="closeMenu();authLogout()" style="color:var(--red)"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h3M16 8l4 4-4 4M20 12H10"/></svg>Abmelden</button>
         </div>
       </div>
       <input type="file" id="importFile" accept=".json,.csv" style="display:none" onchange="importFile(event)">
-      <button class="ghost" id="acctBtn" onclick="openSync()" title="Mein Konto · Abmelden" style="display:none">◉ Konto</button>
+      <button class="ghost icon-btn" id="acctBtn" onclick="openSync()" title="Mein Konto" aria-label="Mein Konto" style="display:none"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.4-3.8 4.6-6 8-6s6.600 2.200 8 6"/></svg></button>
       <button class="primary" onclick="openEntry()">＋ Trade eintragen</button>
     </div>
   </div>
@@ -622,12 +604,11 @@
 <div class="overlay" id="syncOverlay">
   <div class="modal">
     <button class="x" onclick="closeSync()">✕</button>
-    <h2>◉ Mein Konto</h2>
+    <h2>Mein Konto</h2>
     <p class="lead">Alles, was du einträgst, wird automatisch in deiner persönlichen Cloud-Datenbank gespeichert. Auf jedem Gerät einfach anmelden – alles ist da.</p>
     <div class="acctinfo"><div class="nm" id="acct_name">–</div><div class="em" id="acct_email">–</div></div>
     <label>Anzeigename<input type="text" id="acct_newname" placeholder="z.B. Roman" autocomplete="nickname"><span class="hint">So erscheinst du später im Team-Ranking.</span></label>
     <label>Neues Passwort<input type="password" id="acct_newpass" placeholder="leer lassen, wenn es bleiben soll" autocomplete="new-password"></label>
-    <label class="chk" style="margin-bottom:18px"><input type="checkbox" id="acct_dark" onchange="setTheme(this.checked?'dark':'light')"> Dunkles Design</label>
     <div class="row"><button class="primary" onclick="saveAccountSettings()">✓ Speichern</button><button class="danger" onclick="authLogout()">⏻ Abmelden</button></div>
     <div class="msg" id="s_msg"></div>
     <div class="dangerzone">
@@ -664,7 +645,7 @@
     </div>
 
     <div class="msg" id="a_msg"></div>
-    <div class="authnote">Jeder Nutzer sieht ausschließlich seine eigenen Daten. <a href="?demo" style="color:var(--violet)">Demo ohne Anmeldung ansehen →</a> · <button class="authlink" onclick="setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark')">Hell/Dunkel</button></div>
+    <div class="authnote">Jeder Nutzer sieht ausschließlich seine eigenen Daten. <a href="?demo" style="color:var(--violet)">Demo ohne Anmeldung ansehen →</a></div>
   </div>
 </div>
 
@@ -1224,7 +1205,7 @@ function renderWeek(){
   const t0 = isoLocal(new Date());
   const labels=["Mo","Di","Mi","Do","Fr","Sa","So"];
   const cur = weekData(0);
-  document.getElementById("weekPill").innerHTML = `Woche <span class="num ${cls(cur.total)}" style="font-weight:600;margin-left:2px">${fmtC(cur.total)} $</span>`;
+  const _wp=document.getElementById("weekPill"); if(_wp) _wp.innerHTML = `Woche <span class="num ${cls(cur.total)}" style="font-weight:600;margin-left:2px">${fmtC(cur.total)} $</span>`;
 
   const w = weekData(weekOffset);
   const title = weekOffset===0 ? "Diese Woche" : (weekOffset===-1 ? "Letzte Woche" : Math.abs(weekOffset)+" Wochen zurück");
@@ -1518,11 +1499,11 @@ function renderChart(){
   chart = new Chart(ctx,{ type:"line", data:{labels:dates,datasets},
     options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:"index",intersect:false},
       plugins:{ legend:{display:false},
-        tooltip:{ backgroundColor: isDark()?"#12283C":"#FFFFFF", borderColor: isDark()?"rgba(250,249,246,.16)":"#D8D2C7", borderWidth:1, padding:12, cornerRadius:12,
-          titleColor: isDark()?"#F6F3EE":"#0E2A47", bodyColor: isDark()?"#D9DEE3":"#394652", usePointStyle:true,
+        tooltip:{ backgroundColor: "#FFFFFF", borderColor: "#D8D2C7", borderWidth:1, padding:12, cornerRadius:12,
+          titleColor: "#0E2A47", bodyColor: "#394652", usePointStyle:true,
           callbacks:{ label:c=>` ${c.dataset.label}: ${(c.parsed.y>=0?'+':'−')+Math.abs(c.parsed.y).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})} USD` } } },
-      scales:{ x:{ ticks:{color: isDark()?"#8794A0":"#778089",font:{size:11}}, grid:{display:false}, border:{display:false} },
-               y:{ ticks:{color: isDark()?"#8794A0":"#778089",font:{size:11},callback:v=>v+" $"}, grid:{color: isDark()?"rgba(250,249,246,.07)":"#E8E4DC"}, border:{display:false} } } }});
+      scales:{ x:{ ticks:{color: "#778089",font:{size:11}}, grid:{display:false}, border:{display:false} },
+               y:{ ticks:{color: "#778089",font:{size:11},callback:v=>v+" $"}, grid:{color: "#E8E4DC"}, border:{display:false} } } }});
   document.getElementById("legend").innerHTML = groups.map(g=>
     `<div class="li ${hidden[field+g.id]?'off':''}" onclick="toggleDS('${field+g.id}')"><span class="sw" style="background:${g.color}"></span>${escapeHtml(g.name)}</div>`).join("");
 }
@@ -1545,7 +1526,6 @@ function openSync(){
   document.getElementById("acct_email").textContent = (user && user.email) || "–";
   document.getElementById("acct_newname").value = displayName();
   document.getElementById("acct_newpass").value = ""; msg(""); dzCancel();
-  const cb=document.getElementById("acct_dark"); if(cb) cb.checked=isDark();
   document.getElementById("syncOverlay").classList.add("show");
 }
 async function saveAccountSettings(){
@@ -1561,7 +1541,7 @@ async function saveAccountSettings(){
   try{ await sb.from("profiles").upsert({ id:user.id, display_name:name }, { onConflict:"id" }); }catch(e){}
   document.getElementById("acct_name").textContent=name; document.getElementById("acct_newpass").value="";
   document.getElementById("appTitle").textContent = name+"s Trading Dashboard"; document.title = name+"s Trading Dashboard · Kings Club Trades Monitor";
-  const ab=document.getElementById("acctBtn"); if(ab) ab.textContent="◉ "+name;
+  const ab=document.getElementById("acctBtn"); if(ab) ab.title=name+" · Mein Konto";
   msg(pass ? "✅ Name und Passwort gespeichert." : "✅ Gespeichert.");
 }
 function closeSync(){ document.getElementById("syncOverlay").classList.remove("show"); }
@@ -1694,7 +1674,7 @@ function deErr(e){
 function onLogin(){
   if(localStorage.getItem(OWNER_KEY)!==user.id){ resetLocalData(); localStorage.setItem(OWNER_KEY, user.id); }
   const nm=displayName(); document.getElementById("appTitle").textContent = nm ? nm+"s Trading Dashboard" : "Trading Dashboard";
-  const ab=document.getElementById("acctBtn"); if(ab){ ab.style.display=""; ab.textContent="◉ "+(nm||"Konto"); }
+  const ab=document.getElementById("acctBtn"); if(ab){ ab.style.display=""; ab.title=(nm?nm+" · ":"")+"Mein Konto"; }
   document.title = (nm ? nm+"s " : "") + "Trading Dashboard · Kings Club Trades Monitor";
   ensureAccountsForTrades(); ensureStylesForTrades(); dedupeIds(); initForm(); render(); setStatus("Verbunden","ok"); cloudPull(true);
 }
@@ -2181,14 +2161,7 @@ function showView(name){
   window.scrollTo({top:0, behavior:"instant"});
 }
 (function(){ let v="heute"; if(!DEMO){ try{ v=localStorage.getItem("tr_view")||"heute"; }catch(e){} } if(document.getElementById("view-"+v)){ currentView=v; document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active", x.id==="view-"+v)); document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on", b.dataset.view===v)); } })();
-/* ---------- Hell / Dunkel ---------- */
-function setTheme(t){
-  if(t==="dark") document.documentElement.dataset.theme="dark"; else delete document.documentElement.dataset.theme;
-  try{ localStorage.setItem("tr_theme", t); }catch(e){}
-  const cb=document.getElementById("acct_dark"); if(cb) cb.checked = (t==="dark");
-  if(typeof chart!=="undefined" && chart) renderChart();
-}
-function isDark(){ return document.documentElement.dataset.theme==="dark"; }
+try{ localStorage.removeItem("tr_theme"); }catch(e){}
 document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ document.querySelectorAll(".overlay.show").forEach(o=>{ if(o.id!=="authOverlay") o.classList.remove("show"); }); } });
 function closeEntry(){ document.getElementById("entryOverlay").classList.remove("show"); }
 

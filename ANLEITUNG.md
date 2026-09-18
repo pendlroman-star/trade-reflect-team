@@ -90,7 +90,7 @@ Wenn du später etwas am Code änderst: In GitHub Desktop **Commit to main** und
 3. **Verwalten → Konten**: eigene Trading-Konten anlegen (Name, Startkapital, optional Tagesziel und Verlustlimit). Der Knopf „Konten verwalten“ in der Ansicht „Heute“ führt ebenfalls dorthin.
 4. **Verwalten → Kategorien**: sagen, woher ein Trade kommt. Vorgegeben sind „Eigene Trades", „Signal XYZ", „Signal Coinminds" und „Signal Claude". Jeder kann Kategorien umbenennen, löschen oder neue anlegen.
 5. **＋ Trade eintragen** (oben rechts, öffnet ein Fenster): Konto und Kategorie wählen, Ergebnis eintragen. Alles wird automatisch in der eigenen Cloud-Datenbank gespeichert.
-6. **Namensknopf oben rechts** öffnet „Mein Konto“: Anzeigename oder Passwort ändern, dunkles Design einschalten, abmelden oder das eigene Konto samt allen Daten endgültig löschen.
+6. **Personen-Symbol oben rechts** öffnet „Mein Konto“: Anzeigename oder Passwort ändern, abmelden oder das eigene Konto samt allen Daten endgültig löschen. Das **Regler-Symbol** daneben ist das Menü „Verwalten“, das **Kurven-Symbol** öffnet die Kings Club Goldanalyse in einem neuen Fenster.
 
 Das Dashboard hat vier Ansichten, umschaltbar über die Reiter in der Kopfzeile: **Heute** (Tagesstand, Konten, Woche, Regeln), **Analyse** (Kategorie-Ranking, Auswertung, Verlust-Analyse, Kurve), **Kalender** und **Historie**.
 
