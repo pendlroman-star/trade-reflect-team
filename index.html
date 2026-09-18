@@ -111,7 +111,9 @@
   .sec-actions{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
   /* Team-Seite */
   .icon-btn.on{background:var(--navy); color:#FAF9F6; border-color:transparent}
-  .icon-btn .avatar{width:26px; height:26px; font-size:10.5px}
+  .icon-btn .avatar{width:36px; height:36px; font-size:12px}
+  button.icon-btn.has-avatar{border:none; background:transparent; border-radius:50%; padding:0; width:36px; height:36px; box-shadow:0 0 0 1px var(--stroke2); overflow:hidden; transition:box-shadow .15s ease}
+  button.icon-btn.has-avatar:hover{background:transparent; transform:none; box-shadow:0 0 0 2px var(--teal6)}
   .avatar{width:44px; height:44px; border-radius:50%; flex:none; display:grid; place-items:center; background:var(--navy6); color:#FAF9F6; font-weight:650; font-size:15px; overflow:hidden}
   .avatar img{width:100%; height:100%; object-fit:cover; display:block}
   .avatar.lg{width:64px; height:64px; font-size:20px}
@@ -1635,6 +1637,7 @@ function closeSync(){ document.getElementById("syncOverlay").classList.remove("s
 function applyRecord(rec){
   trades = Array.isArray(rec.trades) ? rec.trades : [];
   PROFILE = normProfile(rec.profile); localStorage.setItem(PROFILE_KEY, JSON.stringify(PROFILE)); updateAvatarUI();
+  if(typeof currentView!=="undefined" && currentView==="team") setTimeout(renderTeam, 0);
   if(Array.isArray(rec.accounts) && rec.accounts.length){ ACCOUNTS=rec.accounts.map(normAccount); localStorage.setItem(ACCOUNTS_KEY,JSON.stringify(ACCOUNTS)); }
   if(Array.isArray(rec.styles) && rec.styles.length){ STYLES=rec.styles.map(normStyle); localStorage.setItem(STYLES_KEY,JSON.stringify(STYLES)); }
   if(ensureAccountsForTrades() | ensureStylesForTrades()){ dirty=true; schedulePush(); }
@@ -1762,7 +1765,7 @@ function onLogin(){
   if(localStorage.getItem(OWNER_KEY)!==user.id){ resetLocalData(); localStorage.setItem(OWNER_KEY, user.id); }
   const nm=displayName(); document.getElementById("appTitle").textContent = nm ? nm+"s Trading Dashboard" : "Trading Dashboard";
   const ab=document.getElementById("acctBtn"); if(ab){ ab.style.display=""; ab.title=(nm?nm+" · ":"")+"Mein Konto"; }
-  updateAvatarUI();
+  updateAvatarUI(); if(typeof currentView!=="undefined" && currentView==="team") setTimeout(renderTeam, 0);
   document.title = (nm ? nm+"s " : "") + "Trading Dashboard · Kings Club Trades Monitor";
   ensureAccountsForTrades(); ensureStylesForTrades(); dedupeIds(); initForm(); render(); setStatus("Verbunden","ok"); cloudPull(true);
 }
@@ -2359,7 +2362,7 @@ function avatarUpload(ev){
     }; img.src=r.result; };
   r.readAsDataURL(f); ev.target.value="";
 }
-function updateAvatarUI(){ const ab=document.getElementById("acctBtn"); if(!ab) return; ab.innerHTML = PROFILE.avatar ? avatarHtml(displayName(), PROFILE.avatar) : ICON_PERSON; }
+function updateAvatarUI(){ const ab=document.getElementById("acctBtn"); if(!ab) return; ab.innerHTML = PROFILE.avatar ? avatarHtml(displayName(), PROFILE.avatar) : ICON_PERSON; ab.classList.toggle("has-avatar", !!PROFILE.avatar); }
 
 /* Kurzfassung, die geteilt wird (keine Notizen, keine Kontonamen) */
 function buildTeamCard(){
