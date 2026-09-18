@@ -6,7 +6,7 @@
 <title>Kings Club Trades Monitor · Trading Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400..700&family=Playfair+Display:ital,wght@0,500..700;1,500..600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
@@ -14,32 +14,38 @@
 <style>
   :root{
     color-scheme:light;
-    --bg:#f4f5f8;
-    --text:#15171c; --muted:#5f6675; --faint:#8f97a6;
-    --glass:#ffffff; --glass2:#f3f4f8;
-    --stroke:rgba(20,24,32,.11); --stroke2:rgba(20,24,32,.07);
-    --green:#0f9f66; --red:#df3550; --amber:#d4870e; --blue:#2f6fe4; --violet:#6d4ee6; --accent:#6d4ee6;
-    --grad:linear-gradient(120deg,#7c5cff 0%,#3f7dff 100%);
-    --radius:20px; --shadow:0 1px 2px rgba(20,24,40,.04), 0 12px 32px -20px rgba(20,24,40,.22);
-    --hover:rgba(20,24,32,.05); --track:rgba(20,24,32,.07); --rowline:rgba(20,24,32,.05); --midline:rgba(20,24,32,.18);
-    --panel:#ffffff; --inputbg:#ffffff; --headbg:rgba(244,245,248,.85); --thead:rgba(250,250,252,.97);
-    --scroll:rgba(20,24,32,.18); --overlay:rgba(20,24,32,.38);
-    --glow1:rgba(124,92,255,.10); --glow2:rgba(63,125,255,.08); --glow3:rgba(15,159,102,.05);
+    /* Markenfarben laut Designguide: Navy fuehrt, Teal ist der Akzent, Terracotta der Kontrast. Gold ist keine Leitfarbe. */
+    --navy:#0E2A47; --teal:#205B52; --copper:#C25F4A; --sage:#A7B5A3; --stone:#E8E4DC; --ivory:#FAF9F6; --bar1:#0E2A47;
+    --bg:#FAF9F6;
+    --text:#0E2A47; --muted:#5E6E7C; --faint:#8D99A4;
+    --glass:#ffffff; --glass2:#F1EFE8;
+    --stroke:rgba(14,42,71,.13); --stroke2:rgba(14,42,71,.07);
+    --green:#205B52; --red:#C25F4A; --amber:#A9762F; --blue:#0E2A47; --violet:#0E2A47; --accent:#0E2A47;
+    --grad:linear-gradient(140deg,#0E2A47 0%,#16384F 100%);
+    --radius:12px; --shadow:0 1px 2px rgba(14,42,71,.04), 0 12px 34px -20px rgba(14,42,71,.24);
+    --hover:rgba(14,42,71,.05); --track:rgba(14,42,71,.07); --rowline:rgba(14,42,71,.055); --midline:rgba(14,42,71,.18);
+    --panel:#ffffff; --inputbg:#ffffff; --headbg:rgba(250,249,246,.88); --thead:rgba(245,243,237,.97);
+    --scroll:rgba(14,42,71,.18); --overlay:rgba(14,42,71,.35);
+    --glow1:transparent; --glow2:transparent; --glow3:transparent;
+    --font-sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    --font-serif:'Playfair Display',Georgia,'Times New Roman',serif;
+    --font-mono:'IBM Plex Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
     --onchip:#fff;
   }
   html[data-theme="dark"]{
     color-scheme:dark;
-    --bg:#08090d;
-    --text:#eef1f7; --muted:#8891a6; --faint:#5b6474;
-    --glass:rgba(255,255,255,.045); --glass2:rgba(255,255,255,.028);
-    --stroke:rgba(255,255,255,.09); --stroke2:rgba(255,255,255,.055);
-    --green:#1fd48a; --red:#ff5a72; --amber:#ffb347; --blue:#5b9bff; --violet:#9d7bff; --accent:#9d7bff;
-    --grad:linear-gradient(120deg,#9d7bff 0%,#5b9bff 100%);
-    --shadow:0 18px 50px -20px rgba(0,0,0,.75);
-    --hover:rgba(255,255,255,.08); --track:rgba(255,255,255,.06); --rowline:rgba(255,255,255,.04); --midline:rgba(255,255,255,.2);
-    --panel:linear-gradient(180deg,rgba(24,25,33,.98),rgba(16,17,23,.98)); --inputbg:rgba(255,255,255,.04); --headbg:linear-gradient(180deg,rgba(8,9,13,.9),rgba(8,9,13,.55)); --thead:rgba(16,17,23,.94);
-    --scroll:rgba(255,255,255,.14); --overlay:rgba(4,5,8,.66);
-    --glow1:rgba(157,123,255,.16); --glow2:rgba(91,155,255,.13); --glow3:rgba(31,212,138,.08);
+    --bar1:#7FA8CC;
+    --bg:#0B1823;
+    --text:#FAF9F6; --muted:#95A3A6; --faint:#6D7C82;
+    --glass:rgba(250,249,246,.05); --glass2:rgba(250,249,246,.03);
+    --stroke:rgba(250,249,246,.10); --stroke2:rgba(250,249,246,.06);
+    --green:#3E9384; --red:#DE7A62; --amber:#D3A055; --blue:#7FA8CC; --violet:#7FA8CC; --accent:#7FA8CC;
+    --grad:linear-gradient(140deg,#123B58 0%,#1B4F48 100%);
+    --shadow:0 18px 50px -20px rgba(0,0,0,.7);
+    --hover:rgba(250,249,246,.08); --track:rgba(250,249,246,.06); --rowline:rgba(250,249,246,.045); --midline:rgba(250,249,246,.2);
+    --panel:linear-gradient(180deg,#12242D,#0E1E27); --inputbg:rgba(250,249,246,.04); --headbg:linear-gradient(180deg,rgba(11,24,35,.92),rgba(11,24,35,.6)); --thead:rgba(18,36,45,.95);
+    --scroll:rgba(250,249,246,.14); --overlay:rgba(4,10,16,.66);
+    --glow1:transparent; --glow2:transparent; --glow3:transparent;
   }
   *{box-sizing:border-box; scrollbar-width:thin; scrollbar-color:var(--scroll) transparent}
   ::-webkit-scrollbar{width:8px; height:8px}
@@ -50,7 +56,7 @@
   html,body{margin:0;padding:0}
   body{
     background:var(--bg); color:var(--text);
-    font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    font-family:var(--font-sans);
     font-size:14px; line-height:1.45; letter-spacing:-.01em; min-height:100vh;
     background-image:
       radial-gradient(900px 500px at 12% -8%, var(--glow1), transparent 60%),
@@ -58,22 +64,31 @@
       radial-gradient(700px 500px at 50% 120%, var(--glow3), transparent 60%);
     background-attachment:fixed;
   }
-  ::selection{background:rgba(157,123,255,.35)}
+  ::selection{background:rgba(14,42,71,.35)}
   .num{font-variant-numeric:tabular-nums; font-feature-settings:"tnum"}
-  h1,h2,h3,.display{font-family:'Space Grotesk','Inter',sans-serif; letter-spacing:-.02em}
+  h1,h2,h3,.display{font-family:var(--font-serif); letter-spacing:-.005em; font-weight:600}
+  /* Zahlen, Zeiten und Kennwerte in Monospace, wie im Designguide vorgesehen */
+  .num,td.num,.mono,table th{font-variant-numeric:tabular-nums}
 
   .wrap{max-width:1180px; margin:0 auto; padding:0 26px 80px}
   header{position:sticky; top:0; z-index:30; backdrop-filter:blur(16px) saturate(140%);
     background:var(--headbg); border-bottom:1px solid var(--stroke2)}
   .headin{max-width:1180px; margin:0 auto; padding:12px 26px; display:flex; align-items:center; gap:14px; flex-wrap:wrap}
   .brand{display:flex; align-items:center; gap:10px; white-space:nowrap}
-  .logo{width:34px; height:34px; border-radius:10px; background:var(--grad); display:grid; place-items:center; font-size:17px; box-shadow:0 8px 24px -6px rgba(157,123,255,.45)}
-  .brand h1{margin:0; font-size:16px; font-weight:600}
-  .brand .tag{font-size:11px; color:var(--muted); margin-top:1px}
+  /* Signet der Marke: drei Balken, aussen hoch, Mitte niedriger */
+  .logo{width:auto; height:26px; border-radius:0; background:none; box-shadow:none; display:flex; align-items:flex-end; gap:3px; flex:none}
+  .logo i{width:5px; display:block; transform-origin:bottom; animation:bargrow .6s cubic-bezier(.2,.7,.3,1) both}
+  .logo i:nth-child(1){height:26px; background:var(--bar1)}
+  .logo i:nth-child(2){height:14px; background:var(--copper); animation-delay:.09s}
+  .logo i:nth-child(3){height:26px; background:var(--teal); animation-delay:.18s}
+  @keyframes bargrow{from{transform:scaleY(.15); opacity:0} to{transform:scaleY(1); opacity:1}}
+  @media (prefers-reduced-motion:reduce){.logo i{animation:none}}
+  .brand h1{margin:0; font-size:17px; font-weight:600; letter-spacing:.005em}
+  .brand .tag{font-family:var(--font-mono); font-size:10px; letter-spacing:.11em; text-transform:uppercase; color:var(--muted); margin-top:3px}
   .spacer{flex:1}
   .syncpill{display:flex; align-items:center; gap:7px; font-size:12px; color:var(--muted); background:var(--glass); border:1px solid var(--stroke2); padding:7px 12px; border-radius:100px}
   .dot{width:7px; height:7px; border-radius:50%; background:var(--faint)}
-  .dot.ok{background:var(--green); box-shadow:0 0 10px 1px rgba(31,212,138,.7)}
+  .dot.ok{background:var(--green); box-shadow:0 0 10px 1px rgba(32,91,82,.7)}
   .dot.err{background:var(--red)} .dot.busy{background:var(--amber); animation:pulse 1s infinite}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 
@@ -81,8 +96,8 @@
   .nav{display:flex; gap:3px; background:var(--glass2); border:1px solid var(--stroke2); border-radius:100px; padding:4px}
   .nav button{background:transparent; border:none; border-radius:100px; padding:8px 18px; font-size:13px; color:var(--muted); font-weight:500}
   .nav button:hover{background:var(--hover); transform:none; color:var(--text)}
-  .nav button.on{background:var(--glass); color:var(--text); font-weight:600; box-shadow:0 1px 3px rgba(20,24,40,.14)}
-  html[data-theme="dark"] .nav button.on{background:rgba(255,255,255,.1); box-shadow:none}
+  .nav button.on{background:var(--glass); color:var(--text); font-weight:600; box-shadow:0 1px 3px rgba(14,42,71,.14)}
+  html[data-theme="dark"] .nav button.on{background:rgba(250,249,246,.1); box-shadow:none}
   @media(max-width:1240px){ .nav button{padding:8px 12px} .headin{gap:10px} }
   @media(max-width:1130px) and (min-width:721px){ #weekPill{display:none} .toolbar button{padding:9px 11px} }
   .view{display:none} .view.active{display:block; animation:fade .18s ease}
@@ -104,8 +119,8 @@
   button.primary{background:var(--grad); border:none; color:#fff; font-weight:600; box-shadow:0 10px 26px -10px rgba(120,120,255,.8)}
   button.primary:hover{filter:brightness(1.08)}
   button.ghost{background:transparent}
-  button.danger{color:var(--red); border-color:rgba(255,90,114,.3); background:rgba(255,90,114,.06)}
-  button.danger:hover{background:rgba(255,90,114,.13)}
+  button.danger{color:var(--red); border-color:rgba(194,95,74,.3); background:rgba(194,95,74,.06)}
+  button.danger:hover{background:rgba(194,95,74,.13)}
   button.tiny{padding:5px 9px; font-size:12px; border-radius:8px}
 
   section{margin-top:40px}
@@ -119,17 +134,17 @@
   .topgrid{display:grid; grid-template-columns:1.1fr .9fr; gap:16px; margin-top:24px}
   .topgrid > .card{margin-top:0}
   @media(max-width:860px){ .topgrid{grid-template-columns:1fr} }
-  #rules{background:linear-gradient(155deg, rgba(157,123,255,.16), rgba(91,155,255,.05)); border-color:rgba(157,123,255,.38); box-shadow:0 20px 55px -26px rgba(120,110,255,.6)}
-  #rules.alert{background:linear-gradient(150deg, rgba(255,66,86,.95), rgba(190,26,46,.82)); border-color:rgba(255,120,135,.9); box-shadow:0 22px 60px -18px rgba(255,50,70,.85); animation:alertPulse 1.4s ease-in-out infinite}
-  @keyframes alertPulse{0%,100%{box-shadow:0 22px 60px -20px rgba(255,50,70,.75)}50%{box-shadow:0 22px 74px -10px rgba(255,60,80,1)}}
-  .stopchip{background:rgba(0,0,0,.22); border:1px solid rgba(255,255,255,.25); border-radius:10px; padding:8px 12px; font-size:13px; color:#fff; display:flex; justify-content:space-between; gap:10px}
+  #rules{background:linear-gradient(155deg, rgba(14,42,71,.16), rgba(14,42,71,.05)); border-color:rgba(14,42,71,.38); box-shadow:0 20px 55px -26px rgba(14,42,71,.6)}
+  #rules.alert{background:linear-gradient(150deg, rgba(194,95,74,.95), rgba(194,95,74,.82)); border-color:rgba(194,95,74,.9); box-shadow:0 22px 60px -18px rgba(194,95,74,.85); animation:alertPulse 1.4s ease-in-out infinite}
+  @keyframes alertPulse{0%,100%{box-shadow:0 22px 60px -20px rgba(194,95,74,.75)}50%{box-shadow:0 22px 74px -10px rgba(194,95,74,1)}}
+  .stopchip{background:rgba(0,0,0,.22); border:1px solid rgba(250,249,246,.25); border-radius:10px; padding:8px 12px; font-size:13px; color:#fff; display:flex; justify-content:space-between; gap:10px}
   .hero{padding:24px 26px; display:grid; grid-template-columns:1fr auto; gap:16px; align-items:center; position:relative; overflow:hidden}
-  .hero::before{content:""; position:absolute; inset:0; background:radial-gradient(500px 200px at 0% 0%, rgba(157,123,255,.1), transparent 70%); pointer-events:none}
+  .hero::before{content:""; position:absolute; inset:0; background:radial-gradient(500px 200px at 0% 0%, rgba(14,42,71,.1), transparent 70%); pointer-events:none}
   .hero .lbl{font-size:13.5px; color:var(--muted); font-weight:600}
-  .hero .big{font-family:'Space Grotesk'; font-size:52px; font-weight:600; line-height:1; margin:12px 0 6px; letter-spacing:-.03em}
+  .hero .big{font-family:var(--font-mono); font-size:52px; font-weight:600; line-height:1; margin:12px 0 6px; letter-spacing:-.03em}
   .hero .sub{font-size:13px; color:var(--muted)}
   .hero .metrics{display:flex; gap:26px; margin-top:20px; flex-wrap:wrap}
-  .hero .metrics .m .mv{font-family:'Space Grotesk'; font-size:20px; font-weight:600}
+  .hero .metrics .m .mv{font-family:var(--font-mono); font-size:20px; font-weight:600}
   .hero .metrics .m .mk{font-size:12px; color:var(--muted); margin-top:2px}
   .ring-wrap{display:flex; flex-direction:column; align-items:center}
   .ring{position:relative; width:150px; height:150px}
@@ -137,7 +152,7 @@
   .ring .rc{fill:none; stroke-width:13; stroke-linecap:round}
   .ring .bgc{stroke:var(--track)}
   .ring .center{position:absolute; inset:0; display:grid; place-items:center; text-align:center}
-  .ring .center .pct{font-family:'Space Grotesk'; font-size:26px; font-weight:600}
+  .ring .center .pct{font-family:var(--font-mono); font-size:26px; font-weight:600}
   .ring .center .cl{font-size:11px; color:var(--muted); margin-top:2px}
 
   .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(255px,1fr)); gap:16px}
@@ -146,7 +161,7 @@
   .acct .accent{position:absolute; top:0; left:0; right:0; height:3px; opacity:.9}
   .acct h3{margin:0; font-size:16px; font-weight:600}
   .acct .asub{font-size:12px; color:var(--muted); margin-top:2px}
-  .acct .headline{font-family:'Space Grotesk'; font-size:30px; font-weight:600; margin:16px 0 2px; letter-spacing:-.02em}
+  .acct .headline{font-family:var(--font-mono); font-size:30px; font-weight:600; margin:16px 0 2px; letter-spacing:-.02em}
   .acct .headline .cur{font-size:16px; color:var(--muted); font-weight:500}
   .acct .headlbl{font-size:12px; color:var(--muted)}
   .acct .mini{display:flex; gap:18px; margin-top:16px}
@@ -157,11 +172,11 @@
   .track{height:8px; border-radius:100px; background:var(--track); overflow:hidden; position:relative}
   .track > span{position:absolute; left:0; top:0; bottom:0; border-radius:100px; transition:width .5s cubic-bezier(.2,.8,.2,1)}
   .badge{display:inline-flex; align-items:center; gap:6px; padding:6px 11px; border-radius:100px; font-size:11.5px; font-weight:600; margin-top:14px}
-  .badge.ok{background:rgba(31,212,138,.13); color:var(--green)}
-  .badge.warn{background:rgba(255,179,71,.13); color:var(--amber)}
-  .badge.stop{background:rgba(255,90,114,.14); color:var(--red)}
+  .badge.ok{background:rgba(32,91,82,.13); color:var(--green)}
+  .badge.warn{background:rgba(169,118,47,.13); color:var(--amber)}
+  .badge.stop{background:rgba(194,95,74,.14); color:var(--red)}
   .badge.mute{background:var(--glass2); color:var(--muted)}
-  .badge.lost{background:rgba(255,90,114,.14); color:var(--red)}
+  .badge.lost{background:rgba(194,95,74,.14); color:var(--red)}
   .acct-lost{opacity:.6; filter:grayscale(.35)}
   .acct-lost:hover{opacity:.9; transform:translateY(-2px)}
   .pos{color:var(--green)} .neg{color:var(--red)} .neu{color:var(--muted)}
@@ -178,18 +193,18 @@
   .chip-pick.on{background:var(--grad); color:#fff; border-color:transparent; font-weight:600}
   .seg2{display:grid; grid-template-columns:1fr 1fr; gap:8px}
   .seg2-btn{justify-content:center; padding:11px 8px; border-radius:11px; font-weight:600; font-size:14px; letter-spacing:0; text-transform:none}
-  .seg2-btn.long.active{background:rgba(31,212,138,.16); border-color:var(--green); color:var(--green)}
-  .seg2-btn.short.active{background:rgba(255,90,114,.16); border-color:var(--red); color:var(--red)}
-  .ef-pnl input{font-size:19px; font-weight:700; font-family:'Space Grotesk'}
-  .reason-field{background:rgba(255,90,114,.07); border:1px solid rgba(255,90,114,.32); border-radius:12px; padding:13px 15px}
+  .seg2-btn.long.active{background:rgba(32,91,82,.16); border-color:var(--green); color:var(--green)}
+  .seg2-btn.short.active{background:rgba(194,95,74,.16); border-color:var(--red); color:var(--red)}
+  .ef-pnl input{font-size:19px; font-weight:600; font-family:var(--font-mono)}
+  .reason-field{background:rgba(194,95,74,.07); border:1px solid rgba(194,95,74,.32); border-radius:12px; padding:13px 15px}
   .ef-actions{display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-top:2px}
   .toggle-chip{display:inline-flex; align-items:center; gap:8px; cursor:pointer; padding:11px 18px; border-radius:100px; background:var(--glass2); border:1px solid var(--stroke2); font-size:13px; font-weight:600; color:var(--muted); user-select:none; transition:.15s}
   .toggle-chip:hover{color:var(--text)}
-  .toggle-chip:has(input:checked){background:rgba(255,179,71,.16); border-color:var(--amber); color:var(--amber)}
-  .toggle-chip.tp:has(input:checked){background:rgba(31,212,138,.16); border-color:var(--green); color:var(--green)}
+  .toggle-chip:has(input:checked){background:rgba(169,118,47,.16); border-color:var(--amber); color:var(--amber)}
+  .toggle-chip.tp:has(input:checked){background:rgba(32,91,82,.16); border-color:var(--green); color:var(--green)}
   .ef-submit{padding:13px 28px; font-size:14px}
   textarea{font-family:inherit; font-size:14px; color:var(--text); letter-spacing:-.01em; background:var(--inputbg); border:1px solid var(--stroke2); border-radius:11px; padding:11px 12px; width:100%; resize:vertical; min-height:92px; line-height:1.5}
-  textarea:focus{outline:none; border-color:rgba(157,123,255,.7); background:rgba(157,123,255,.06); box-shadow:0 0 0 3px rgba(157,123,255,.14)}
+  textarea:focus{outline:none; border-color:rgba(14,42,71,.7); background:rgba(14,42,71,.06); box-shadow:0 0 0 3px rgba(14,42,71,.14)}
   .acct .acct-top{position:absolute; top:13px; right:14px; display:flex; align-items:center; gap:8px; z-index:2}
   .acct .acct-info{width:26px; height:26px; padding:0; border-radius:50%; display:grid; place-items:center; font-size:13px; font-weight:700; background:var(--glass2); border:1px solid var(--stroke2); color:var(--muted); flex:none}
   .acct .acct-info:hover{color:var(--text); border-color:var(--accent); transform:none}
@@ -200,7 +215,7 @@
   label{display:flex; flex-direction:column; gap:7px; font-size:12.5px; color:var(--muted); font-weight:600}
   input,select{font-family:inherit; font-size:14px; color:var(--text); letter-spacing:-.01em; background:var(--inputbg); border:1px solid var(--stroke2); border-radius:11px; padding:11px 12px; width:100%; transition:.15s}
   input::placeholder{color:var(--faint)}
-  input:focus,select:focus{outline:none; border-color:rgba(157,123,255,.7); background:rgba(157,123,255,.06); box-shadow:0 0 0 3px rgba(157,123,255,.14)}
+  input:focus,select:focus{outline:none; border-color:rgba(14,42,71,.7); background:rgba(14,42,71,.06); box-shadow:0 0 0 3px rgba(14,42,71,.14)}
   .full{grid-column:1/-1}
 
   .chart-card{padding:22px 24px}
@@ -229,11 +244,11 @@
   .chip{display:inline-flex; align-items:center; gap:6px; font-size:11.5px; padding:3px 9px; border-radius:100px; background:var(--glass2); border:1px solid var(--stroke2)}
   .chip .cd{width:6px; height:6px; border-radius:50%}
   .tag-dir{font-size:11px; padding:2px 8px; border-radius:6px; font-weight:600}
-  .tag-dir.long{background:rgba(31,212,138,.13); color:var(--green)}
-  .tag-dir.short{background:rgba(255,90,114,.13); color:var(--red)}
+  .tag-dir.long{background:rgba(32,91,82,.13); color:var(--green)}
+  .tag-dir.short{background:rgba(194,95,74,.13); color:var(--red)}
   .row-del{opacity:0; transition:.15s} tbody tr:hover .row-del{opacity:1}
   .empty{text-align:center; color:var(--muted); padding:48px 20px; font-size:13.5px}
-  .rank{font-family:'Space Grotesk'; font-weight:700; width:28px; text-align:center; color:var(--muted)}
+  .rank{font-family:var(--font-mono); font-weight:700; width:28px; text-align:center; color:var(--muted)}
   .rank.g1{color:#d9a400} .rank.g2{color:var(--muted)} .rank.g3{color:#c07a3a}
   .thin{color:var(--muted); font-size:11.5px}
   .stylename{display:inline-flex; align-items:center; gap:8px; font-weight:600}
@@ -245,11 +260,11 @@
   @keyframes fade{from{opacity:0}to{opacity:1}}
   .modal{width:100%; max-width:540px; max-height:90vh; overflow:auto; padding:28px; border-radius:24px; background:var(--panel); border:1px solid var(--stroke); box-shadow:0 30px 80px -30px rgba(0,0,0,.45)}
   .modal .x{float:right; background:transparent; border:none; color:var(--muted); font-size:20px; padding:4px 8px}
-  .modal h2{margin:0 0 6px; font-size:20px; font-weight:600; font-family:'Space Grotesk'}
+  .modal h2{margin:0 0 6px; font-size:21px; font-weight:600; font-family:var(--font-serif)}
   .modal .lead{color:var(--muted); font-size:13px; line-height:1.55; margin:0 0 20px}
   .steps{counter-reset:s; list-style:none; padding:0; margin:0 0 20px; display:flex; flex-direction:column; gap:11px}
   .steps li{position:relative; padding-left:38px; font-size:13px; color:var(--muted); line-height:1.5}
-  .steps li::before{counter-increment:s; content:counter(s); position:absolute; left:0; top:-1px; width:24px; height:24px; border-radius:50%; background:var(--grad); color:#fff; display:grid; place-items:center; font-size:12px; font-weight:700; font-family:'Space Grotesk'}
+  .steps li::before{counter-increment:s; content:counter(s); position:absolute; left:0; top:-1px; width:24px; height:24px; border-radius:50%; background:var(--grad); color:#fff; display:grid; place-items:center; font-size:12px; font-weight:700; font-family:var(--font-mono)}
   .steps a{color:var(--violet); text-decoration:none} .steps a:hover{text-decoration:underline}
   .steps b{color:var(--text)}
   .modal label{margin-bottom:16px}
@@ -262,7 +277,9 @@
   #authOverlay{z-index:500; background:var(--bg); backdrop-filter:none; padding:20px}
   #authOverlay .modal{max-width:440px; padding:32px}
   .authlogo{display:flex; align-items:center; gap:12px; margin-bottom:18px}
-  .authlogo .logo{width:44px; height:44px; font-size:22px}
+  .authlogo .logo{width:auto; height:36px}
+  .authlogo .logo i:nth-child(1),.authlogo .logo i:nth-child(3){height:36px}
+  .authlogo .logo i:nth-child(2){height:19px}
   .authlogo h2{margin:0}
   .authlogo .tag{font-size:12px; color:var(--muted)}
   .authtabs{display:flex; gap:6px; margin-bottom:18px; background:var(--glass2); border:1px solid var(--stroke2); border-radius:100px; padding:4px}
@@ -270,7 +287,7 @@
   .authtabs button.on{background:var(--grad); color:#fff; font-weight:600}
   .authlink{background:transparent; border:none; color:var(--violet); font-size:12.5px; padding:6px 0; text-decoration:underline}
   .authnote{font-size:12px; color:var(--faint); line-height:1.5; margin-top:16px; border-top:1px solid var(--stroke2); padding-top:14px}
-  .authwarn{background:rgba(255,179,71,.1); border:1px solid rgba(255,179,71,.35); color:var(--amber); border-radius:12px; padding:12px 14px; font-size:12.5px; line-height:1.5; margin-bottom:16px}
+  .authwarn{background:rgba(169,118,47,.1); border:1px solid rgba(169,118,47,.35); color:var(--amber); border-radius:12px; padding:12px 14px; font-size:12.5px; line-height:1.5; margin-bottom:16px}
   .acctinfo{display:flex; flex-direction:column; gap:4px; background:var(--glass2); border:1px solid var(--stroke2); border-radius:14px; padding:14px 16px; margin-bottom:18px}
   .acctinfo .nm{font-weight:600; font-size:15px}
   .acctinfo .em{font-size:12.5px; color:var(--muted)}
@@ -283,10 +300,10 @@
   @media(max-width:760px){ .lossgrid{grid-template-columns:1fr} }
   .weekgrid{display:grid; grid-template-columns:repeat(7,1fr); gap:10px}
   .daytile{padding:12px 8px; border-radius:12px; background:var(--glass2); border:1px solid var(--stroke2); text-align:center}
-  .daytile.today{border-color:rgba(157,123,255,.7); box-shadow:0 0 0 3px rgba(157,123,255,.14)}
+  .daytile.today{border-color:rgba(14,42,71,.7); box-shadow:0 0 0 3px rgba(14,42,71,.14)}
   .daytile.wknd{background:transparent}
   .daytile .dl{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; font-weight:600}
-  .daytile .dv{font-family:'Space Grotesk'; font-weight:600; font-size:14px; margin:6px 0 2px}
+  .daytile .dv{font-family:var(--font-mono); font-weight:600; font-size:14px; margin:6px 0 2px}
   .daytile .dd{font-size:10px; color:var(--faint)}
   @media(max-width:560px){ .weekgrid{grid-template-columns:repeat(4,1fr)} }
 
@@ -307,7 +324,7 @@
   .lbrow{display:flex; gap:14px; align-items:center; background:var(--glass2); border:1px solid var(--stroke2); border-radius:13px; padding:13px 15px; transition:.15s}
   .lbrow:hover{border-color:var(--stroke)}
   .lbrow.dim{opacity:.5}
-  .lbrank{flex:none; width:30px; height:30px; border-radius:50%; display:grid; place-items:center; font-family:'Space Grotesk'; font-weight:700; font-size:14px; background:var(--glass); border:1px solid var(--stroke2); color:var(--muted)}
+  .lbrank{flex:none; width:30px; height:30px; border-radius:50%; display:grid; place-items:center; font-family:var(--font-mono); font-weight:700; font-size:14px; background:var(--glass); border:1px solid var(--stroke2); color:var(--muted)}
   .lbrank.g1{background:linear-gradient(145deg,#ffe08a,#f5b301); color:#3a2a00; border:none}
   .lbrank.g2{background:linear-gradient(145deg,#eef2f8,#aeb7c7); color:#20242c; border:none}
   .lbrank.g3{background:linear-gradient(145deg,#f0b98a,#c87a43); color:#2a1400; border:none}
@@ -315,18 +332,18 @@
   .lbtop{display:flex; align-items:center; gap:8px; margin-bottom:9px}
   .lbdot{width:10px; height:10px; border-radius:50%; flex:none}
   .lbtop .nm{font-weight:600; font-size:14px}
-  .lbtop .tot{margin-left:auto; font-family:'Space Grotesk'; font-weight:700; font-size:15px; white-space:nowrap}
+  .lbtop .tot{margin-left:auto; font-family:var(--font-mono); font-weight:700; font-size:15px; white-space:nowrap}
   .divbar{position:relative; height:9px; border-radius:100px; background:var(--track)}
   .divbar .fill{position:absolute; top:0; bottom:0; border-radius:100px; transition:width .5s cubic-bezier(.2,.8,.2,1)}
   .divbar .fill.pos{background:linear-gradient(90deg,var(--green),#7be0b4)}
-  .divbar .fill.neg{background:linear-gradient(270deg,#ff5a72,#ff8a5c)}
+  .divbar .fill.neg{background:linear-gradient(270deg,#DE7A62,#ff8a5c)}
   .divbar .mid{position:absolute; left:50%; top:-2px; bottom:-2px; width:1px; background:var(--midline)}
   .lbchips{display:flex; gap:7px; flex-wrap:wrap; margin-top:11px}
   .lbchip{font-size:11.5px; color:var(--muted); background:var(--glass); border:1px solid var(--stroke2); border-radius:100px; padding:3px 9px; font-variant-numeric:tabular-nums}
   .lbchip b{color:var(--text); font-weight:600}
-  .calcell.today{border-color:rgba(157,123,255,.7); box-shadow:0 0 0 2px rgba(157,123,255,.14)}
+  .calcell.today{border-color:rgba(14,42,71,.7); box-shadow:0 0 0 2px rgba(14,42,71,.14)}
   .calcell .cd1{font-size:10px; color:var(--faint)}
-  .calcell .cd2{font-family:'Space Grotesk'; font-size:12px; font-weight:600; margin-top:4px}
+  .calcell .cd2{font-family:var(--font-mono); font-size:12px; font-weight:600; margin-top:4px}
   .insgrid{display:grid; grid-template-columns:1fr 1.1fr 1fr; gap:16px}
   @media(max-width:960px){ .insgrid{grid-template-columns:1fr} }
 
@@ -356,8 +373,8 @@
 <header>
   <div class="headin">
     <div class="brand">
-      <div class="logo">📈</div>
-      <h1 id="appTitle">Trading Dashboard</h1>
+      <div class="logo" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div><h1 id="appTitle">Trading Dashboard</h1><div class="tag">Kings Club · Trades Monitor</div></div>
     </div>
     <nav class="nav" id="nav" aria-label="Ansichten">
       <button class="on" data-view="heute" onclick="showView('heute')">Heute</button>
@@ -608,7 +625,7 @@
 <!-- LOGIN / REGISTRIERUNG -->
 <div class="overlay" id="authOverlay">
   <div class="modal">
-    <div class="authlogo"><div class="logo">📈</div><div><h2>Kings Club Trades Monitor</h2><div class="tag">Dein persönliches Trading-Dashboard</div></div></div>
+    <div class="authlogo"><div class="logo" aria-hidden="true"><i></i><i></i><i></i></div><div><h2>Kings Club Trades Monitor</h2><div class="tag">Dein persönliches Trading-Dashboard</div></div></div>
     <div class="authwarn" id="authConfigWarn" style="display:none">⚠︎ Die Datei <b>config.js</b> ist noch nicht ausgefüllt. Bitte Supabase-URL und Anon-Key eintragen (siehe ANLEITUNG.md).</div>
 
     <div id="authForms">
@@ -654,7 +671,7 @@
         <label>Phase<input type="number" id="ac_phase" placeholder="1"></label>
       </div>
       <div style="display:flex;gap:18px;align-items:center;margin-top:6px;flex-wrap:wrap">
-        <label style="margin:0">Farbe<input type="color" id="ac_color" value="#5b9bff" style="width:54px;height:38px;padding:3px;cursor:pointer"></label>
+        <label style="margin:0">Farbe<input type="color" id="ac_color" value="#7FA8CC" style="width:54px;height:38px;padding:3px;cursor:pointer"></label>
         <label class="chk" style="margin:0"><input type="checkbox" id="ac_demo"> Demokonto (zählt nicht zu „Heute · Trading-Konten")</label>
       </div>
       <label style="margin-top:12px">Regeln der Prop-Firma <span class="muted-note">(eine pro Zeile – über ℹ auf der Konto-Karte abrufbar)</span><textarea id="ac_rules" placeholder="z.B.
@@ -688,7 +705,7 @@ Keine News-Trades / kein Wochenend-Halten"></textarea></label>
     <div id="styleForm" style="border-top:1px solid var(--stroke2);margin-top:16px;padding-top:16px;display:none">
       <div id="styleFormTitle" style="font-size:12.5px;color:var(--violet);font-weight:700;margin-bottom:12px">Neue Kategorie</div>
       <label>Name<input type="text" id="st_name" placeholder="z.B. Signal Telegram-Gruppe" onkeydown="if(event.key==='Enter') saveStyle()"></label>
-      <label style="margin:0">Farbe<input type="color" id="st_color" value="#5b9bff" style="width:54px;height:38px;padding:3px;cursor:pointer"></label>
+      <label style="margin:0">Farbe<input type="color" id="st_color" value="#7FA8CC" style="width:54px;height:38px;padding:3px;cursor:pointer"></label>
       <div class="row" style="margin-top:14px"><button class="primary" onclick="saveStyle()">✓ Speichern</button><button class="ghost" onclick="hideStyleForm()">Abbrechen</button></div>
       <div class="msg" id="st_msg"></div>
     </div>
@@ -790,7 +807,7 @@ Sonstiges"></textarea></label>
 /* ---------- Konten (Risiko-Ebene) ---------- */
 const ACCOUNTS_KEY = "roman_accounts_v1";
 const DEFAULT_ACCOUNTS = [
-  { id:"main",      name:"Mein Konto",     sub:"unter ⚙︎ Konten anpassen", capital:100000, target:0, loss:0, color:"#1fd48a", demo:false, challenge:false },
+  { id:"main",      name:"Mein Konto",     sub:"unter ⚙︎ Konten anpassen", capital:100000, target:0, loss:0, color:"#3E9384", demo:false, challenge:false },
   { id:"demo",      name:"Demokonto 100k", sub:"Testlabor",               capital:100000, target:0, loss:0, color:"#8891a6", demo:true,  challenge:false },
 ];
 function normAccount(x){ return {
@@ -803,8 +820,8 @@ function normAccount(x){ return {
 function loadAccounts(){ try{ const a=JSON.parse(localStorage.getItem(ACCOUNTS_KEY)); if(Array.isArray(a)&&a.length) return a.map(normAccount); }catch(e){} return DEFAULT_ACCOUNTS.map(x=>({...x})); }
 function saveAccounts(){ localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(ACCOUNTS)); dirty=true; schedulePush(); }
 let ACCOUNTS = loadAccounts();
-const LEGACY_ACCOUNT_NAMES = { instant:{name:"Instant 100k",sub:"Prop-Konto",target:500,loss:800,color:"#1fd48a"}, challenge:{name:"Challenge 100k",sub:"Prop-Challenge",target:500,loss:1500,color:"#5b9bff",challenge:true,profitPct:8}, crypto:{name:"Krypto-Konto",sub:"Eigenes Kapital",color:"#ff9f43"} };
-const ACCOUNT_PALETTE = ["#1fd48a","#5b9bff","#ff9f43","#9d7bff","#ff8fb1","#4dd0e1"];
+const LEGACY_ACCOUNT_NAMES = { instant:{name:"Instant 100k",sub:"Prop-Konto",target:500,loss:800,color:"#3E9384"}, challenge:{name:"Challenge 100k",sub:"Prop-Challenge",target:500,loss:1500,color:"#7FA8CC",challenge:true,profitPct:8}, crypto:{name:"Krypto-Konto",sub:"Eigenes Kapital",color:"#ff9f43"} };
+const ACCOUNT_PALETTE = ["#3E9384","#7FA8CC","#ff9f43","#7FA8CC","#ff8fb1","#4dd0e1"];
 function ensureAccountsForTrades(){
   let added=false;
   trades.forEach(t=>{
@@ -819,13 +836,13 @@ function ensureAccountsForTrades(){
 const STYLES_KEY = "tr_styles_v1";
 const DEFAULT_STYLES = [
   { id:"eigen",     name:"Eigene Trades",     color:"#ff8fb1" },
-  { id:"xyz",       name:"Signal XYZ",        color:"#5b9bff" },
-  { id:"coinminds", name:"Signal Coinminds",  color:"#ffb347" },
-  { id:"claude",    name:"Signal Claude",     color:"#9d7bff" },
+  { id:"xyz",       name:"Signal XYZ",        color:"#7FA8CC" },
+  { id:"coinminds", name:"Signal Coinminds",  color:"#D3A055" },
+  { id:"claude",    name:"Signal Claude",     color:"#7FA8CC" },
 ];
 /* Namen alter Kategorie-IDs (aus früheren Datenständen), damit importierte Trades lesbar bleiben */
 const LEGACY_STYLE_NAMES = { gpt:"ChatGPT KI-Analyse", coinmindz:"CoinMindz Signale", us30:"US30 Strategie", phemex:"Sonstige Signale" };
-const STYLE_PALETTE = ["#ff8fb1","#5b9bff","#ffb347","#9d7bff","#1fd48a","#ff7a59","#4dd0e1","#c6ff5b","#ff5a72","#f5d76e"];
+const STYLE_PALETTE = ["#ff8fb1","#7FA8CC","#D3A055","#7FA8CC","#3E9384","#ff7a59","#4dd0e1","#c6ff5b","#DE7A62","#f5d76e"];
 function normStyle(x){ return { id:x.id||("st_"+Math.random().toString(36).slice(2,8)), name:x.name||"Kategorie", color:x.color||"#8891a6" }; }
 function loadStyles(){ try{ const a=JSON.parse(localStorage.getItem(STYLES_KEY)); if(Array.isArray(a)&&a.length) return a.map(normStyle); }catch(e){} return DEFAULT_STYLES.map(x=>({...x})); }
 function saveStyles(){ localStorage.setItem(STYLES_KEY, JSON.stringify(STYLES)); dirty=true; schedulePush(); }
@@ -906,8 +923,8 @@ const LOSS_REASONS = [
 const BAD_REASONS = ["Angst – zu früh geschlossen","Revenge-Trading","Gier – TP verpasst","Emotionen allgemein","Lotsize zu groß","Kein Plan / Übertrading"];
 /* Handels-Sessions (Zeiten in UTC) */
 const SESSIONS = [
-  { id:"asia",    name:"Asien",             color:"#5b9bff", mez:"01:00–10:00" },
-  { id:"london",  name:"London",            color:"#1fd48a", mez:"09:00–18:00" },
+  { id:"asia",    name:"Asien",             color:"#7FA8CC", mez:"01:00–10:00" },
+  { id:"london",  name:"London",            color:"#3E9384", mez:"09:00–18:00" },
   { id:"ny",      name:"New York",          color:"#ff9f43", mez:"14:00–23:00" },
   { id:"overlap", name:"London-NY-Overlap", color:"#b388ff", mez:"14:00–18:00" },
 ];
@@ -1186,7 +1203,7 @@ function renderWeek(){
         ${weekOffset!==0?`<button class="tiny" onclick="resetWeek()">Diese Woche</button>`:""}
       </div>
       <div style="text-align:right">
-        <div class="num ${cls(w.total)}" style="font-family:'Space Grotesk';font-size:30px;font-weight:600;line-height:1">${fmt(w.total)} <span style="font-size:15px;color:var(--muted)">USD</span></div>
+        <div class="num ${cls(w.total)}" style="font-family:var(--font-mono);font-size:30px;font-weight:600;line-height:1">${fmt(w.total)} <span style="font-size:15px;color:var(--muted)">USD</span></div>
         <div style="font-size:12px;color:var(--muted);margin-top:4px">Wochenergebnis</div>
       </div>
     </div>
@@ -1228,8 +1245,8 @@ function renderCalendar(){
     const warn = dl.some(t=> BAD_REASONS.includes(t.reason) || stops.has(t.id));
     const note = (dayNotes[iso]||"").trim();
     let bg = "";
-    if(v>0) bg = `background:rgba(31,212,138,${(.08+.3*Math.abs(v)/maxAbs).toFixed(2)});border-color:rgba(31,212,138,.35)`;
-    else if(v<0) bg = `background:rgba(255,90,114,${(.08+.3*Math.abs(v)/maxAbs).toFixed(2)});border-color:rgba(255,90,114,.35)`;
+    if(v>0) bg = `background:rgba(32,91,82,${(.08+.3*Math.abs(v)/maxAbs).toFixed(2)});border-color:rgba(32,91,82,.35)`;
+    else if(v<0) bg = `background:rgba(194,95,74,${(.08+.3*Math.abs(v)/maxAbs).toFixed(2)});border-color:rgba(194,95,74,.35)`;
     const icons = `<div class="calicons">${warn?`<span class="calwarn" title="Undisziplinierter Tag">⚠</span>`:""}<span class="noteico ${note?'has':''}" title="${note?'Fazit vorhanden':'Fazit hinzufügen'}">✎</span></div>`;
     html += `<div class="calcell ${iso===t0?'today':''}" style="${bg}" onclick="openDay('${iso}')">${icons}<div class="cd1">${d}</div><div class="cd2 num ${v?cls(v):''}" style="${v?'':'color:var(--faint)'}">${v?fmtC(v):"·"}</div></div>`;
   }
@@ -1244,7 +1261,7 @@ function renderInsights(){
     return `<div style="margin-bottom:16px">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
         <span class="tag-dir ${name==='Long'?'long':'short'}" style="font-size:12.5px;padding:3px 10px">${name==='Long'?'▲ Long':'▼ Short'}</span>
-        <span class="num ${cls(tot)}" style="font-weight:600;font-family:'Space Grotesk';font-size:17px">${fmt(tot)} $</span>
+        <span class="num ${cls(tot)}" style="font-weight:600;font-family:var(--font-mono);font-size:17px">${fmt(tot)} $</span>
       </div>
       <div class="track" style="height:6px;margin-bottom:6px"><span style="width:${wr}%;background:${name==='Long'?'var(--green)':'var(--red)'}"></span></div>
       <div style="font-size:12px;color:var(--muted)">${n} Trades · ${wr}% Winrate · Ø ${n?fmt(tot/n):"—"} $/Trade</div>
@@ -1440,7 +1457,7 @@ function renderTable(){
       <td><span class="tag-dir ${t.dir==='Long'?'long':'short'}">${t.dir}</span></td>
       <td class="r num ${t.pnl>=0?'pos':'neg'}">${fmt(t.pnl)}</td>
       <td class="r num ${rm?cls(rm.r):''}" ${rm&&rm.est?'title="geschätzt (Median der SL-HIT-Verluste)"':''} style="${rm?'':'color:var(--faint)'}">${rm?fmtR(rm):"—"}</td>
-      <td style="white-space:normal;color:var(--muted);max-width:240px">${stops.has(t.id)?`<span style="display:inline-block;background:rgba(255,90,114,.2);color:var(--red);border-radius:100px;padding:1px 8px;font-size:11px;font-weight:700;margin-right:6px">⛔ nach Stopp</span>`:""}${t.slHit?`<span style="display:inline-block;background:rgba(255,179,71,.15);color:var(--amber);border-radius:100px;padding:1px 8px;font-size:11px;font-weight:600;margin-right:6px">🎯 SL</span>`:""}${t.tpHit?`<span style="display:inline-block;background:rgba(31,212,138,.15);color:var(--green);border-radius:100px;padding:1px 8px;font-size:11px;font-weight:600;margin-right:6px">🎯 TP</span>`:""}${t.reason?`<span style="display:inline-block;background:rgba(255,90,114,.13);color:var(--red);border-radius:100px;padding:1px 8px;font-size:11px;font-weight:600;margin-right:6px">⚠︎ ${escapeHtml(t.reason)}</span>`:""}${escapeHtml(t.note)|| ((t.reason||t.slHit||t.tpHit||stops.has(t.id))?"":"—")}</td>
+      <td style="white-space:normal;color:var(--muted);max-width:240px">${stops.has(t.id)?`<span style="display:inline-block;background:rgba(194,95,74,.2);color:var(--red);border-radius:100px;padding:1px 8px;font-size:11px;font-weight:700;margin-right:6px">⛔ nach Stopp</span>`:""}${t.slHit?`<span style="display:inline-block;background:rgba(169,118,47,.15);color:var(--amber);border-radius:100px;padding:1px 8px;font-size:11px;font-weight:600;margin-right:6px">🎯 SL</span>`:""}${t.tpHit?`<span style="display:inline-block;background:rgba(32,91,82,.15);color:var(--green);border-radius:100px;padding:1px 8px;font-size:11px;font-weight:600;margin-right:6px">🎯 TP</span>`:""}${t.reason?`<span style="display:inline-block;background:rgba(194,95,74,.13);color:var(--red);border-radius:100px;padding:1px 8px;font-size:11px;font-weight:600;margin-right:6px">⚠︎ ${escapeHtml(t.reason)}</span>`:""}${escapeHtml(t.note)|| ((t.reason||t.slHit||t.tpHit||stops.has(t.id))?"":"—")}</td>
       <td style="text-align:right;white-space:nowrap"><button class="tiny row-del" onclick="duplicateTrade(${t.id})" title="Duplizieren">⧉</button> <button class="tiny row-del" onclick="editTrade(${t.id})" title="Bearbeiten">✎</button> <button class="danger tiny row-del" onclick="delTrade(${t.id})" title="Löschen">✕</button></td>
     </tr>`;
   }).join("");
@@ -1464,11 +1481,11 @@ function renderChart(){
   chart = new Chart(ctx,{ type:"line", data:{labels:dates,datasets},
     options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:"index",intersect:false},
       plugins:{ legend:{display:false},
-        tooltip:{ backgroundColor: isDark()?"rgba(16,17,23,.95)":"rgba(255,255,255,.97)", borderColor: isDark()?"rgba(255,255,255,.1)":"rgba(20,24,32,.1)", borderWidth:1, padding:12, cornerRadius:12,
-          titleColor: isDark()?"#fff":"#15171c", bodyColor: isDark()?"#c7cddb":"#3d434f", usePointStyle:true,
+        tooltip:{ backgroundColor: isDark()?"rgba(18,36,45,.95)":"rgba(250,249,246,.97)", borderColor: isDark()?"rgba(250,249,246,.1)":"rgba(14,42,71,.1)", borderWidth:1, padding:12, cornerRadius:12,
+          titleColor: isDark()?"#fff":"#0E2A47", bodyColor: isDark()?"#c7cddb":"#3d434f", usePointStyle:true,
           callbacks:{ label:c=>` ${c.dataset.label}: ${(c.parsed.y>=0?'+':'−')+Math.abs(c.parsed.y).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})} USD` } } },
       scales:{ x:{ ticks:{color: isDark()?"#6b7385":"#8f97a6",font:{size:11}}, grid:{display:false}, border:{display:false} },
-               y:{ ticks:{color: isDark()?"#6b7385":"#8f97a6",font:{size:11},callback:v=>v+" $"}, grid:{color: isDark()?"rgba(255,255,255,.05)":"rgba(20,24,32,.06)"}, border:{display:false} } } }});
+               y:{ ticks:{color: isDark()?"#6b7385":"#8f97a6",font:{size:11},callback:v=>v+" $"}, grid:{color: isDark()?"rgba(250,249,246,.05)":"rgba(14,42,71,.06)"}, border:{display:false} } } }});
   document.getElementById("legend").innerHTML = groups.map(g=>
     `<div class="li ${hidden[field+g.id]?'off':''}" onclick="toggleDS('${field+g.id}')"><span class="sw" style="background:${g.color}"></span>${escapeHtml(g.name)}</div>`).join("");
 }
@@ -1756,9 +1773,9 @@ function renderRules(){
     el.innerHTML = `
       <div style="text-align:center;padding:8px 4px 6px">
         <div style="font-size:44px;line-height:1">⛔</div>
-        <div style="font-family:'Space Grotesk';font-size:30px;font-weight:700;letter-spacing:.04em;color:#fff;margin-top:6px">STOP</div>
+        <div style="font-family:var(--font-mono);font-size:30px;font-weight:700;letter-spacing:.04em;color:#fff;margin-top:6px">STOP</div>
         <div style="font-size:15px;font-weight:700;color:#fff;margin-top:8px">Heute keine Trades mehr!</div>
-        <div style="font-size:13px;color:rgba(255,255,255,.9);margin-top:6px;line-height:1.45">Tagesverlustgrenze erreicht bei <b>${escapeHtml(names)}</b></div>
+        <div style="font-size:13px;color:rgba(250,249,246,.9);margin-top:6px;line-height:1.45">Tagesverlustgrenze erreicht bei <b>${escapeHtml(names)}</b></div>
         <div style="display:flex;flex-direction:column;gap:7px;margin-top:15px">
           ${hits.map(x=>`<div class="stopchip"><span>${escapeHtml(x.a.name)}</span><span class="num" style="font-weight:700">${fmt(x.tp)} / Limit −${x.a.loss.toLocaleString("de-DE")}</span></div>`).join("")}
         </div>
@@ -1775,7 +1792,7 @@ function renderRules(){
     </div>
     <div style="display:flex;flex-direction:column;gap:13px">
       ${rules.map((r,i)=>`<div style="display:flex;gap:12px;align-items:flex-start">
-        <span style="flex:none;width:26px;height:26px;border-radius:50%;background:var(--grad);color:#fff;display:grid;place-items:center;font-weight:700;font-family:'Space Grotesk';font-size:13px;box-shadow:0 6px 16px -6px rgba(120,110,255,.7)">${i+1}</span>
+        <span style="flex:none;width:26px;height:26px;border-radius:50%;background:var(--grad);color:#fff;display:grid;place-items:center;font-weight:700;font-family:var(--font-mono);font-size:13px;box-shadow:0 6px 16px -6px rgba(14,42,71,.7)">${i+1}</span>
         <div>
           <div style="font-size:14px;font-weight:600;line-height:1.3">${escapeHtml(r.h)}</div>
           ${r.s?`<div style="font-size:12.5px;color:var(--muted);line-height:1.4;margin-top:2px">${escapeHtml(r.s)}</div>`:""}
@@ -1855,7 +1872,7 @@ function clearAcctForm(){
   editingAcctId=null;
   document.getElementById("acctFormTitle").textContent="Neues Konto";
   ["ac_name","ac_sub","ac_capital","ac_startpnl","ac_target","ac_loss","ac_profit","ac_phase"].forEach(id=>document.getElementById(id).value="");
-  document.getElementById("ac_color").value="#5b9bff";
+  document.getElementById("ac_color").value="#7FA8CC";
   document.getElementById("ac_demo").checked=false;
   document.getElementById("ac_challenge").checked=false;
   document.getElementById("ac_lost").checked=false;
@@ -1875,7 +1892,7 @@ function editAccount(id){
   document.getElementById("ac_startpnl").value=(a.startPnl?a.startPnl:"");
   document.getElementById("ac_target").value=a.target||"";
   document.getElementById("ac_loss").value=a.loss||"";
-  document.getElementById("ac_color").value=a.color||"#5b9bff";
+  document.getElementById("ac_color").value=a.color||"#7FA8CC";
   document.getElementById("ac_demo").checked=!!a.demo;
   document.getElementById("ac_lost").checked=!!a.lost;
   document.getElementById("ac_rules").value=a.firmRules||"";
@@ -1951,7 +1968,7 @@ function editStyle(id){
   const st=STYLES.find(x=>x.id===id); if(!st) return;
   editingStyleId=id; document.getElementById("styleFormTitle").textContent="Bearbeiten: "+st.name;
   document.getElementById("styleForm").style.display=""; document.getElementById("styleAddBtn").style.display="none";
-  document.getElementById("st_name").value=st.name; document.getElementById("st_color").value=st.color||"#5b9bff"; document.getElementById("st_msg").textContent="";
+  document.getElementById("st_name").value=st.name; document.getElementById("st_color").value=st.color||"#7FA8CC"; document.getElementById("st_msg").textContent="";
 }
 function saveStyle(){
   const name=document.getElementById("st_name").value.trim();
@@ -2008,7 +2025,7 @@ function renderLossAnalysis(){
   const allNet = trades.reduce((s,t)=>s+t.pnl,0);
   document.getElementById("lossReason").innerHTML = `
     <div style="font-size:13.5px;color:var(--text);font-weight:600;margin-bottom:4px">Bruttoverluste nach Grund</div>
-    <div class="num neg" style="font-family:'Space Grotesk';font-size:24px;font-weight:600;margin-bottom:4px">${fmt(totalLoss)} <span style="font-size:13px;color:var(--muted)">USD</span></div>
+    <div class="num neg" style="font-family:var(--font-mono);font-size:24px;font-weight:600;margin-bottom:4px">${fmt(totalLoss)} <span style="font-size:13px;color:var(--muted)">USD</span></div>
     <div style="font-size:11.5px;color:var(--muted);margin-bottom:16px">${losing.length} Verlust-Trades${thr===0?"":" ab "+Math.abs(thr)+" USD"} · Netto inkl. Gewinne: <span class="num ${cls(allNet)}" style="font-weight:600">${fmt(allNet)} USD</span></div>
     ${arr.length ? arr.map(x=>`<div style="margin-bottom:12px">
         <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span>${escapeHtml(x.k)} <span class="thin">(${x.n})</span></span><span class="num neg">${fmt(x.sum)}</span></div>
@@ -2045,7 +2062,7 @@ function renderSessions(){
       if(!g.n) return `<div style="opacity:.45;display:flex;align-items:center;gap:8px"><span class="lbdot" style="background:${g.sn.color}"></span><span style="font-size:13px">${g.sn.name}</span><span style="font-size:10.5px;color:var(--faint)">${g.sn.mez} MEZ</span><span class="thin" style="margin-left:auto;font-size:11px">keine Trades</span></div>`;
       const fill = g.tot>=0?`left:50%;width:${(50*g.tot/maxAbs).toFixed(1)}%`:`right:50%;width:${(50*(-g.tot)/maxAbs).toFixed(1)}%`;
       return `<div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span class="lbdot" style="background:${g.sn.color}"></span><span style="font-weight:600;font-size:13.5px">${g.sn.name}</span><span style="font-size:10.5px;color:var(--faint)">${g.sn.mez} MEZ</span><span class="num ${cls(g.tot)}" style="margin-left:auto;font-weight:700;font-family:'Space Grotesk'">${fmt(g.tot)}</span></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span class="lbdot" style="background:${g.sn.color}"></span><span style="font-weight:600;font-size:13.5px">${g.sn.name}</span><span style="font-size:10.5px;color:var(--faint)">${g.sn.mez} MEZ</span><span class="num ${cls(g.tot)}" style="margin-left:auto;font-weight:700;font-family:var(--font-mono)">${fmt(g.tot)}</span></div>
         <div class="divbar"><div class="fill ${g.tot>=0?'pos':'neg'}" style="${fill}"></div><div class="mid"></div></div>
         <div style="font-size:11.5px;color:var(--muted);margin-top:6px">${g.n} Trades · ${g.wr}% Winrate · Ø ${fmt(g.tot/g.n)}</div>
       </div>`;
@@ -2162,7 +2179,7 @@ function openDay(iso){
       <span style="color:var(--muted)">${dl.length} Trade${dl.length===1?"":"s"}</span></div>`;
   if(warn){
     const parts=[]; if(badReasons.length) parts.push(badReasons.map(escapeHtml).join(", ")); if(afterStop) parts.push("Trades nach Stopp");
-    head += `<div style="background:rgba(255,90,114,.12);border:1px solid rgba(255,90,114,.4);color:var(--red);border-radius:10px;padding:10px 12px;font-size:12.5px;margin-bottom:14px;font-weight:600">⚠ Undisziplinierter Tag: ${parts.join(" · ")}</div>`;
+    head += `<div style="background:rgba(194,95,74,.12);border:1px solid rgba(194,95,74,.4);color:var(--red);border-radius:10px;padding:10px 12px;font-size:12.5px;margin-bottom:14px;font-weight:600">⚠ Undisziplinierter Tag: ${parts.join(" · ")}</div>`;
   }
   document.getElementById("dayHead").innerHTML = head;
   const ta=document.getElementById("dayNote"); ta.value = dayNotes[iso]||""; ta.dataset.iso = iso;
