@@ -179,8 +179,10 @@
   .badge.stop{background:var(--negbg); color:var(--red)}
   .badge.mute{background:var(--glass2); color:var(--muted)}
   .badge.lost{background:var(--negbg); color:var(--red)}
-  .acct-lost{opacity:.6; filter:grayscale(.35)}
-  .acct-lost:hover{opacity:.9; transform:translateY(-2px)}
+  .acct-lost{background:var(--glass2)}
+  .acct-lost .headline, .acct-lost h3{color:var(--muted)}
+  .lostlabel{display:inline-block; vertical-align:2px; margin-left:8px; padding:3px 8px; border-radius:6px; background:var(--negbg); color:var(--red); font-size:10.5px; font-weight:700; letter-spacing:.09em; text-transform:uppercase}
+  .acct-lost:hover{transform:translateY(-2px)}
   .pos{color:var(--green)} .neg{color:var(--red)} .neu{color:var(--muted)}
 
   .entry{padding:22px 24px}
@@ -689,7 +691,7 @@ Keine News-Trades / kein Wochenend-Halten"></textarea></label>
           <button type="button" class="ghost tiny" onclick="acLogoClear()">Entfernen</button>
         </div>
       </label>
-      <label class="chk" style="margin-top:12px"><input type="checkbox" id="ac_lost"> 🔻 Konto verloren (verschiebt es in die Rubrik „Verlorene Konten")</label>
+      <label class="chk" style="margin-top:12px"><input type="checkbox" id="ac_lost"> Konto verloren (Limit gerissen) – bleibt sichtbar und bekommt das Etikett „VERLOREN“</label>
       <div class="row" style="margin-top:14px"><button class="primary" onclick="saveAccount()">✓ Speichern</button><button class="ghost" onclick="hideAcctForm()">Abbrechen</button></div>
       <div class="msg" id="ac_msg"></div>
     </div>
@@ -833,7 +835,7 @@ function normAccount(x){ return {
   capital:(x.capital!=null && x.capital!=="")?(+x.capital||0):100000,
   target:+x.target||0, loss:+x.loss||0, color:brandColor(x.color)||"#A9A69D", demo:!!x.demo,
   challenge:!!x.challenge, profitPct:+x.profitPct||0, phase:+x.phase||1, lost:!!x.lost,
-  firmRules: x.firmRules||"", startPnl:+x.startPnl||0, logo: x.logo||""
+  firmRules: x.firmRules||"", startPnl:+x.startPnl||0, logo: x.logo||"", lostDate: x.lostDate||""
 }; }
 function loadAccounts(){ try{ const a=JSON.parse(localStorage.getItem(ACCOUNTS_KEY)); if(Array.isArray(a)&&a.length) return a.map(normAccount); }catch(e){} return DEFAULT_ACCOUNTS.map(x=>({...x})); }
 function saveAccounts(){ localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(ACCOUNTS)); dirty=true; schedulePush(); }
@@ -1388,7 +1390,8 @@ function renderCards(){
     const wr = list.length? Math.round(wins/list.length*100):0;
     let meter="";
     if(a.lost){
-      meter = `<span class="badge lost">🔻 Verloren · Endstand ${fmt(total)} USD</span>`;
+      const ld = a.lostDate ? a.lostDate.split("-").reverse().join(".") : "";
+      meter = `<span class="badge lost">Konto verloren${ld?" am "+ld:""} · Endstand ${fmt(total)} USD</span>`;
     } else if(a.target>0){
       const pct = Math.max(0,Math.min(100, tp/a.target*100));
       const lossPct = Math.max(0,Math.min(100, (-tp)/a.loss*100));
@@ -1415,9 +1418,9 @@ function renderCards(){
       </div>`;
     }
     return `<div class="card acct${a.lost?' acct-lost':''}">
-      <div class="accent" style="background:linear-gradient(90deg,${a.color},transparent)"></div>
+      <div class="accent" style="background:${a.lost?'var(--negfill)':`linear-gradient(90deg,${a.color},transparent)`}"></div>
       <div class="acct-top"><button class="acct-info" onclick="openFirmRules('${a.id}')" title="Regeln der Prop-Firma">ℹ</button>${a.logo?`<img class="acct-logo" src="${a.logo}" alt="${escapeHtml(a.name)}">`:""}</div>
-      <h3>${escapeHtml(a.name)}</h3><div class="asub">${escapeHtml(a.sub)}</div>
+      <h3>${escapeHtml(a.name)}${a.lost?' <span class="lostlabel">Verloren</span>':''}</h3><div class="asub">${escapeHtml(a.sub)}</div>
       <div class="headline num">${fmt0(capNow)} <span class="cur">USD</span></div>
       <div class="headlbl">Aktuelles Kapital</div>
       <div style="font-size:12.5px;margin-top:9px;color:var(--muted)">Seit Start <span class="num ${cls(total)}" style="font-weight:600">${fmt(total)}</span> · Heute <span class="num ${cls(tp)}" style="font-weight:600">${fmt(tp)}</span>${feeSum>0?` · Gebühren <span class="num neg" style="font-weight:600">${fmt(-feeSum)}</span>`:""}</div>
@@ -1428,8 +1431,7 @@ function renderCards(){
         <div class="mi"><div class="v num">${wins}/${list.length-wins}</div><div class="k">W / L</div></div>
       </div>${meter}</div>`;
   }
-  const active = ACCOUNTS.filter(a=>!a.lost);
-  document.getElementById("cards").innerHTML = active.map(cardHtml).join("");
+  document.getElementById("cards").innerHTML = ACCOUNTS.map(cardHtml).join("");   // verlorene Konten bleiben sichtbar, mit Etikett
   const sec = document.getElementById("lostSection");
   if(sec) sec.style.display="none";   // Verlorene Konten werden ausgeblendet (Trades zählen weiter in der Auswertung)
 }
@@ -1842,7 +1844,7 @@ function hideAcctForm(){ const f=document.getElementById("acctForm"); if(f) f.st
 function closeAccounts(){ document.getElementById("acctOverlay").classList.remove("show"); }
 function renderAcctList(){
   document.getElementById("acctList").innerHTML = ACCOUNTS.map((a,idx)=>{
-    const badge = a.lost ? "🔻 Verloren" : (a.demo ? "Demo" : (a.target>0||a.loss>0 ? `Prop · Ziel ${a.target} / Limit ${a.loss}` : "Eigenes Kapital"));
+    const badge = a.lost ? "VERLOREN" : (a.demo ? "Demo" : (a.target>0||a.loss>0 ? `Prop · Ziel ${a.target} / Limit ${a.loss}` : "Eigenes Kapital"));
     return `<div style="display:flex;align-items:center;gap:11px;background:var(--glass2);border:1px solid var(--stroke2);border-radius:10px;padding:9px 12px;${a.lost?'opacity:.6':''}">
       <span style="width:11px;height:11px;border-radius:50%;background:${a.color};flex:none"></span>
       <div style="flex:1;min-width:0">
@@ -1938,7 +1940,9 @@ function saveAccount(){
     challenge:document.getElementById("ac_challenge").checked,
     profitPct:parseFloat(document.getElementById("ac_profit").value)||0,
     phase:parseFloat(document.getElementById("ac_phase").value)||1 };
-  if(editingAcctId){ Object.assign(ACCOUNTS.find(x=>x.id===editingAcctId), data); }
+  const _prev = editingAcctId ? ACCOUNTS.find(x=>x.id===editingAcctId) : null;
+  data.lostDate = data.lost ? ((_prev && _prev.lost && _prev.lostDate) || today()) : "";
+  if(editingAcctId){ Object.assign(_prev, data); }
   else { ACCOUNTS.push(normAccount({ id:"acc_"+Date.now().toString(36), ...data })); }
   saveAccounts(); initForm(); render(); renderAcctList(); clearAcctForm(); hideAcctForm();
   document.getElementById("ac_msg").textContent="✅ Gespeichert.";
