@@ -944,7 +944,7 @@ function saveProfile(){ localStorage.setItem(PROFILE_KEY, JSON.stringify(PROFILE
 let PROFILE = loadProfile();
 /* Legt für jede in Trades verwendete, aber unbekannte Kategorie-ID automatisch eine Kategorie an (nichts geht verloren) */
 function ensureStylesForTrades(){
-  let added=false;
+  let added = migrateSessions();
   trades.forEach(t=>{
     if(!t.style) return;
     if(!STYLES.some(x=>x.id===t.style)){
@@ -1018,14 +1018,33 @@ const LOSS_REASONS = [
 const BAD_REASONS = ["Angst – zu früh geschlossen","Revenge-Trading","Gier – TP verpasst","Emotionen allgemein","Lotsize zu groß","Kein Plan / Übertrading"];
 /* Handels-Sessions (Zeiten in UTC) */
 const SESSIONS = [
-  { id:"asia",    name:"Asien",             color:"#5D8CB5", mez:"01:00–10:00" },
-  { id:"london",  name:"London",            color:"#3E867A", mez:"09:00–18:00" },
-  { id:"ny",      name:"New York",          color:"#D27360", mez:"14:00–23:00" },
-  { id:"overlap", name:"London-NY-Overlap", color:"#C99A2E", mez:"14:00–18:00" },
+  { id:"opening",   name:"Opening",    color:"#8B8A84", mez:"00:00–02:00", from:0,  to:2  },
+  { id:"asia",      name:"Asia",       color:"#5D8CB5", mez:"02:00–06:00", from:2,  to:6  },
+  { id:"prelondon", name:"Pre London", color:"#78B8AC", mez:"06:00–08:00", from:6,  to:8  },
+  { id:"london",    name:"London",     color:"#3E867A", mez:"08:00–12:00", from:8,  to:12 },
+  { id:"preny",     name:"Pre NY",     color:"#C99A2E", mez:"12:00–14:00", from:12, to:14 },
+  { id:"ny",        name:"NY",         color:"#D27360", mez:"14:00–18:00", from:14, to:18 },
+  { id:"afterny",   name:"After NY",   color:"#5D7D9E", mez:"18:00–23:00", from:18, to:24 },   /* 23–24 Uhr zählt mit zu After NY */
 ];
+const SESSION_ALIASES = { "asien":"asia", "new york":"ny", "london-ny-overlap":"ny", "overlap":"ny" };
 function sessionName(id){ const s=SESSIONS.find(x=>x.id===id); return s? s.name : ""; }
-function findSession(v){ v=(""+(v||"")).trim().toLowerCase(); const s=SESSIONS.find(x=>x.id===v || x.name.toLowerCase()===v); return s? s.id : ""; }
-function guessSession(){ const h=new Date().getUTCHours(); if(h>=13&&h<16) return "overlap"; if(h>=8&&h<16) return "london"; if(h>=16&&h<21) return "ny"; return "asia"; }
+function findSession(v){ v=(""+(v||"")).trim().toLowerCase(); if(SESSION_ALIASES[v]) return SESSION_ALIASES[v]; const s=SESSIONS.find(x=>x.id===v || x.name.toLowerCase()===v); return s? s.id : ""; }
+function sessionForHour(h){ const s=SESSIONS.find(x=>h>=x.from && h<x.to); return s ? s.id : "afterny"; }
+function viennaHour(){ try{ const p=new Intl.DateTimeFormat("en-GB",{hour:"2-digit",hourCycle:"h23",timeZone:"Europe/Vienna"}).formatToParts(new Date()).find(x=>x.type==="hour"); const h=parseInt(p.value,10); return isNaN(h) ? new Date().getHours() : h%24; }catch(e){ return new Date().getHours(); } }
+/* Einmalige Umstellung alter Sessions: Uhrzeit aus der Notiz (Import) nutzen, sonst alte Bezeichnung übersetzen */
+function migrateSessions(){
+  let changed=false;
+  trades.forEach(t=>{
+    if(t.sv===2) return;
+    const m=/·\s*(\d{1,2}):(\d{2})\s*[–-]/.exec(t.note||"");
+    if(m){ const id=sessionForHour(Number(m[1])%24); if(t.session!==id){ t.session=id; } }
+    else if(t.session==="overlap"){ t.session="ny"; }
+    t.sv=2; changed=true;
+  });
+  if(changed) localStorage.setItem(KEY, JSON.stringify(trades));
+  return changed;
+}
+function guessSession(){ return sessionForHour(viennaHour()); }
 function updateClock(){
   const el=document.getElementById("sessionNow"); if(!el) return;
   const t=new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit"});
@@ -1080,7 +1099,7 @@ function initForm(){
   document.getElementById("f_account").innerHTML = ACCOUNTS.filter(a=>!a.lost).map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
   document.getElementById("f_style").innerHTML = STYLES.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join("");
   document.getElementById("f_reason").innerHTML = `<option value="">— Grund wählen —</option>` + LOSS_REASONS.map(r=>`<option value="${r}">${r}</option>`).join("");
-  document.getElementById("f_session").innerHTML = `<option value="">— / Krypto</option>` + SESSIONS.map(s=>`<option value="${s.id}">${s.name} · ${s.mez} MEZ</option>`).join("");
+  document.getElementById("f_session").innerHTML = `<option value="">— / Krypto</option>` + SESSIONS.map(s=>`<option value="${s.id}">${s.name} · ${s.mez} Uhr</option>`).join("");
   document.getElementById("f_session").value = guessSession();
   updateClock();
   document.getElementById("symChips").innerHTML = ["XAUUSD","US30","BTCUSDT","ETHUSDT"].map(s=>`<span class="chip-pick" onclick="pickSym('${s}')">${s}</span>`).join("");
@@ -1148,7 +1167,7 @@ function addTrade(e){
     pnl,
     slHit: document.getElementById("f_slhit").checked,
     tpHit: document.getElementById("f_tphit").checked,
-    session: document.getElementById("f_session").value || null,
+    session: document.getElementById("f_session").value || null, sv:2,
     reason: (pnl<0 ? reason : (reason||"")) || null,
     note: document.getElementById("f_note").value.trim()
   });
@@ -1174,7 +1193,7 @@ function editTrade(id){
   g("e_account").innerHTML=ACCOUNTS.map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
   g("e_style").innerHTML=STYLES.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join("");
   g("e_reason").innerHTML=`<option value="">— kein Grund —</option>`+LOSS_REASONS.map(r=>`<option value="${r}">${r}</option>`).join("");
-  g("e_session").innerHTML=`<option value="">— / Krypto</option>`+SESSIONS.map(s=>`<option value="${s.id}">${s.name} · ${s.mez} MEZ</option>`).join("");
+  g("e_session").innerHTML=`<option value="">— / Krypto</option>`+SESSIONS.map(s=>`<option value="${s.id}">${s.name} · ${s.mez} Uhr</option>`).join("");
   g("e_date").value=t.date; g("e_account").value=t.account; g("e_style").value=t.style;
   g("e_symbol").value=t.symbol; g("e_dir").value=t.dir; g("e_pnl").value=t.pnl;
   g("e_lot").value=(t.lot==null?"":String(t.lot).replace(".",",")); g("e_slhit").checked=!!t.slHit; g("e_tphit").checked=!!t.tpHit;
@@ -1195,7 +1214,7 @@ function saveEdit(){
   const entry=parseFloat(g("e_entry").value), slv=parseFloat(g("e_sl").value);
   t.entry=isNaN(entry)?null:entry; t.sl=isNaN(slv)?null:slv;
   t.risk=calcRisk(t.symbol, t.entry, t.sl, t.lot);
-  t.pnl=pnl; t.reason=g("e_reason").value||null; t.session=g("e_session").value||null; t.note=g("e_note").value.trim();
+  t.pnl=pnl; t.reason=g("e_reason").value||null; t.session=g("e_session").value||null; t.sv=2; t.note=g("e_note").value.trim();
   save(); render(); closeEdit();
 }
 function deleteFromEdit(){ const id=editingId; closeEdit(); if(id!=null) delTrade(id); }
@@ -2148,13 +2167,16 @@ function sessionInfo(){
   showInfo("Handels-Sessions erklärt", `
     <p class="lead">Der Markt hat über den Tag verteilt unterschiedlich aktive Phasen. Gerade <b>XAUUSD</b> und <b>US30</b> bewegen sich je nach Session völlig anders.</p>
     <ul style="margin:0 0 16px;padding-left:20px;line-height:1.8;font-size:13.5px">
-      <li><b>Asien</b> · 01:00–10:00 MEZ – ruhiger, engere Ranges.</li>
-      <li><b>London</b> · 09:00–18:00 MEZ – erster großer Impuls, hohe Liquidität.</li>
-      <li><b>New York</b> · 14:00–23:00 MEZ – US-Daten, starke Bewegungen.</li>
-      <li><b>London-NY-Overlap</b> · 14:00–18:00 MEZ – höchste Volatilität, viele Fehlausbrüche.</li>
+      <li><b>Opening</b> · 00:00–02:00 – Handelsstart, dünne Liquidität, oft Spreads.</li>
+      <li><b>Asia</b> · 02:00–06:00 – ruhiger, engere Ranges.</li>
+      <li><b>Pre London</b> · 06:00–08:00 – Positionierung vor Europa, erste Ausbrüche.</li>
+      <li><b>London</b> · 08:00–12:00 – erster großer Impuls, hohe Liquidität.</li>
+      <li><b>Pre NY</b> · 12:00–14:00 – Mittagsflaute, Aufbau vor den US-Daten.</li>
+      <li><b>NY</b> · 14:00–18:00 – US-Daten, stärkste Bewegungen, viele Fehlausbrüche.</li>
+      <li><b>After NY</b> · 18:00–23:00 – Auslaufen des Tages, abnehmende Dynamik.</li>
     </ul>
     <p class="lead">So erkennst du mit der Zeit, in welcher Session du am besten (oder am undiszipliniertesten) handelst. Krypto läuft 24/7 – lass die Session dort einfach auf „—".</p>
-    <p class="lead" style="margin-bottom:0"><b>Hinweis:</b> Zeiten in MEZ (Winterzeit). In der Sommerzeit (MESZ) verschieben sich die Sessions um +1 Stunde.</p>
+    <p class="lead" style="margin-bottom:0"><b>Hinweis:</b> Alle Zeiten in Wiener Ortszeit. Beim Eintragen wird die aktuelle Session automatisch vorgeschlagen.</p>
   `);
 }
 function renderSessions(){
@@ -2169,10 +2191,10 @@ function renderSessions(){
   const anyData = groups.some(g=>g.n>0);
   el.innerHTML = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px"><span style="font-size:13.5px;color:var(--text);font-weight:600">Sessions · Handelszeit</span><button class="info-btn" onclick="sessionInfo()" title="Was bedeuten die Sessions?">ℹ</button></div>` +
     (anyData ? `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px">` + groups.map(g=>{
-      if(!g.n) return `<div style="opacity:.45;display:flex;align-items:center;gap:8px"><span class="lbdot" style="background:${g.sn.color}"></span><span style="font-size:13px">${g.sn.name}</span><span style="font-size:10.5px;color:var(--faint)">${g.sn.mez} MEZ</span><span class="thin" style="margin-left:auto;font-size:11px">keine Trades</span></div>`;
+      if(!g.n) return `<div style="opacity:.45;display:flex;align-items:center;gap:8px"><span class="lbdot" style="background:${g.sn.color}"></span><span style="font-size:13px">${g.sn.name}</span><span style="font-size:10.5px;color:var(--faint)">${g.sn.mez}</span><span class="thin" style="margin-left:auto;font-size:11px">keine Trades</span></div>`;
       const fill = g.tot>=0?`left:50%;width:${(50*g.tot/maxAbs).toFixed(1)}%`:`right:50%;width:${(50*(-g.tot)/maxAbs).toFixed(1)}%`;
       return `<div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span class="lbdot" style="background:${g.sn.color}"></span><span style="font-weight:600;font-size:13.5px">${g.sn.name}</span><span style="font-size:10.5px;color:var(--faint)">${g.sn.mez} MEZ</span><span class="num ${cls(g.tot)}" style="margin-left:auto;font-weight:700;font-family:var(--font-mono)">${fmt(g.tot)}</span></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><span class="lbdot" style="background:${g.sn.color}"></span><span style="font-weight:600;font-size:13.5px">${g.sn.name}</span><span style="font-size:10.5px;color:var(--faint)">${g.sn.mez}</span><span class="num ${cls(g.tot)}" style="margin-left:auto;font-weight:700;font-family:var(--font-mono)">${fmt(g.tot)}</span></div>
         <div class="divbar"><div class="fill ${g.tot>=0?'pos':'neg'}" style="${fill}"></div><div class="mid"></div></div>
         <div style="font-size:11.5px;color:var(--muted);margin-top:6px">${g.n} Trades · ${g.wr}% Winrate · Ø ${fmt(g.tot/g.n)}</div>
       </div>`;
