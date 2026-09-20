@@ -107,9 +107,9 @@ Das **Personen-Gruppen-Symbol** oben rechts öffnet die Team-Seite. Sie zeigt je
 
 ---
 
-## Community Calls
+## Club Calls
 
-Im Menü **Verwalten** (Regler-Symbol) gibt es den Punkt **Community Calls**. Dort stehen die Aufzeichnungen als YouTube-Videos: der neueste Call groß oben, frühere als Karten darunter. Ein Klick spielt das Video direkt auf der Seite ab. YouTube wird erst beim Klick geladen.
+Im Menü **Verwalten** (Regler-Symbol) gibt es den Punkt **Club Calls**. Dort stehen die Aufzeichnungen als YouTube-Videos: der neueste Call groß oben, frühere als Karten darunter. Ein Klick spielt das Video direkt auf der Seite ab. YouTube wird erst beim Klick geladen.
 
 - **Sehen** dürfen die Videos alle angemeldeten Mitglieder.
 - **Hinzufügen, bearbeiten, löschen** darf nur der Betreiber. Bei ihm erscheint der Knopf **„＋ Video hinzufügen“**: YouTube-Link einfügen, Titel wird automatisch geholt, Datum und Beschreibung ergänzen, speichern. Auch nicht gelistete Videos funktionieren.

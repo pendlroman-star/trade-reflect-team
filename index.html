@@ -109,7 +109,7 @@
   #entryOverlay .modal{max-width:840px}
   #entryOverlay .entry{background:transparent; border:none; box-shadow:none; padding:0; backdrop-filter:none}
   .sec-actions{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
-  /* Community Calls */
+  /* Club Calls */
   .yt{position:relative; width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#0E2A47; cursor:pointer; display:block; border:none; padding:0}
   .yt img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .35s ease, opacity .2s ease; opacity:.94}
   .yt:hover{background:#0E2A47; transform:none}
@@ -452,7 +452,7 @@
           <button onclick="openAccounts();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16 14.500h2"/></svg>Konten</button>
           <button onclick="openStyles();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.500V4h7.500L21 14.500 14.500 21 3 11.500z"/><circle cx="7.500" cy="8" r="1.200"/></svg>Kategorien</button>
           <button onclick="openFees();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M14.800 9.300c-.5-.9-1.500-1.400-2.800-1.400-1.700 0-2.900.9-2.900 2.100 0 2.900 5.900 1.400 5.900 4.200 0 1.300-1.300 2.200-3 2.200-1.400 0-2.500-.600-3-1.600M12 6v1.900M12 16.400V18"/></svg>Gebühr erfassen</button>
-          <button onclick="showView('calls');closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8.500v7l6-3.500-6-3.500z"/></svg>Community Calls</button>
+          <button onclick="showView('calls');closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8.500v7l6-3.500-6-3.500z"/></svg>Club Calls</button>
           <div style="height:1px;background:var(--stroke2);margin:4px 6px"></div>
           <button onclick="exportCSV();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10.500l5 5 5-5M5 20h14"/></svg>CSV exportieren</button>
           <button onclick="exportJSON();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10.500l5 5 5-5M5 20h14"/></svg>Backup (JSON)</button>
@@ -609,7 +609,7 @@
 <div class="view" id="view-calls">
   <section>
     <div class="sec-head">
-      <h2>Community Calls</h2>
+      <h2>Club Calls</h2>
       <div class="sec-actions"><span class="note" id="callsNote"></span><button class="primary tiny" id="callAddBtn" onclick="openCallForm()" style="display:none;padding:8px 14px">＋ Video hinzufügen</button></div>
     </div>
     <div id="callsBody"></div>
@@ -683,7 +683,7 @@
   </div>
 </div>
 
-<!-- COMMUNITY CALL ANLEGEN / BEARBEITEN (nur Betreiber) -->
+<!-- CLUB CALL ANLEGEN / BEARBEITEN (nur Betreiber) -->
 <div class="overlay" id="callOverlay">
   <div class="modal">
     <button class="x" onclick="closeCallForm()">✕</button>
@@ -691,7 +691,7 @@
     <p class="lead">YouTube-Link einfügen – Titel und Vorschaubild werden automatisch geholt. Auch nicht gelistete Videos funktionieren.</p>
     <label>YouTube-Link<input type="url" id="cf_url" placeholder="https://www.youtube.com/watch?v=…" oninput="callUrlChanged()"></label>
     <div id="cf_preview" style="margin:-4px 0 16px"></div>
-    <label>Titel<input type="text" id="cf_title" placeholder="z.B. Community Call – Wochenausblick Gold"></label>
+    <label>Titel<input type="text" id="cf_title" placeholder="z.B. Club Call – Wochenausblick Gold"></label>
     <label>Datum des Calls<input type="date" id="cf_date"></label>
     <label>Beschreibung <span class="muted-note">(optional – Themen, Zeitmarken, Kernaussagen)</span><textarea id="cf_desc" placeholder="Worum ging es?"></textarea></label>
     <div class="row"><button class="primary" onclick="saveCall()">✓ Speichern</button><button class="ghost" onclick="closeCallForm()">Abbrechen</button></div>
@@ -2549,7 +2549,7 @@ function openTrader(i){
 }
 
 /* =====================================================================
-   COMMUNITY CALLS – YouTube-Aufzeichnungen, gepflegt vom Betreiber
+   CLUB CALLS – YouTube-Aufzeichnungen, gepflegt vom Betreiber
    ===================================================================== */
 let CALLS=[], callsAdmin=false, editingCallId=null;
 function ytId(url){
@@ -2574,26 +2574,26 @@ function playYt(btn, id){
 function callDate(d){ if(!d) return ""; const p=d.split("-"); const mon=["Jänner","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"][Number(p[1])-1]||""; return `${Number(p[2])}. ${mon} ${p[0]}`; }
 function callAdminBtns(c){ return callsAdmin ? `<div class="calladmin"><button class="ghost tiny" onclick="openCallForm('${c.id}')">✎ Bearbeiten</button><button class="danger tiny" onclick="deleteCall('${c.id}')">Löschen</button></div>` : ""; }
 
-const DEMO_CALLS_NOTE = "In der Demo siehst du nur den Aufbau. Nach der Anmeldung stehen hier die Aufzeichnungen der Community Calls.";
+const DEMO_CALLS_NOTE = "In der Demo siehst du nur den Aufbau. Nach der Anmeldung stehen hier die Aufzeichnungen der Club Calls.";
 async function renderCalls(){
   const body=document.getElementById("callsBody"), note=document.getElementById("callsNote"), add=document.getElementById("callAddBtn");
   const empty=(h,p)=>{ body.innerHTML=`<div class="card teamcta"><h3>${h}</h3><p>${p}</p></div>`; };
   add.style.display="none"; note.textContent="";
-  if(DEMO){ empty("Community Calls", DEMO_CALLS_NOTE); return; }
-  if(!connected()){ empty("Community Calls", "Bitte zuerst anmelden."); return; }
+  if(DEMO){ empty("Club Calls", DEMO_CALLS_NOTE); return; }
+  if(!connected()){ empty("Club Calls", "Bitte zuerst anmelden."); return; }
   note.textContent="Lädt…";
   const [{ data, error }, adm] = await Promise.all([
     sb.from("community_calls").select("id,title,url,video_id,call_date,description,created_at").order("call_date",{ascending:false, nullsFirst:false}).order("created_at",{ascending:false}),
     sb.rpc("is_admin").then(r=>!!r.data).catch(()=>false) ]);
   if(error){ note.textContent=""; const missing=/community_calls|schema cache|does not exist|PGRST205|42P01/i.test((error.message||"")+(error.code||""));
-    empty("Noch nicht eingerichtet", missing ? "In der Datenbank fehlt noch die Tabelle für die Community Calls. Der Betreiber muss einmal die Datei supabase-calls.sql bei Supabase ausführen." : "Laden fehlgeschlagen: "+escapeHtml(error.message||"")); return; }
+    empty("Noch nicht eingerichtet", missing ? "In der Datenbank fehlt noch die Tabelle für die Club Calls. Der Betreiber muss einmal die Datei supabase-calls.sql bei Supabase ausführen." : "Laden fehlgeschlagen: "+escapeHtml(error.message||"")); return; }
   CALLS = data||[]; callsAdmin = adm; add.style.display = callsAdmin ? "" : "none";
   note.textContent = CALLS.length ? CALLS.length+(CALLS.length===1?" Aufzeichnung":" Aufzeichnungen") : "";
   drawCalls();
 }
 function drawCalls(){
   const body=document.getElementById("callsBody");
-  if(!CALLS.length){ body.innerHTML=`<div class="card teamcta"><h3>Noch keine Aufzeichnungen</h3><p>${callsAdmin?"Füge oben rechts das erste Video hinzu.":"Sobald der erste Community Call online ist, findest du ihn hier."}</p></div>`; return; }
+  if(!CALLS.length){ body.innerHTML=`<div class="card teamcta"><h3>Noch keine Aufzeichnungen</h3><p>${callsAdmin?"Füge oben rechts das erste Video hinzu.":"Sobald der erste Club Call online ist, findest du ihn hier."}</p></div>`; return; }
   const [f, ...rest] = CALLS;
   body.innerHTML = `<div class="card callfeat">
       <div>${ytPlayer(f.video_id, f.title, "", "Neu")}</div>
@@ -2631,7 +2631,7 @@ async function saveCall(){
   closeCallForm(); renderCalls();
 }
 async function deleteCall(id){
-  const c=CALLS.find(x=>x.id===id); if(!c || !confirm(`„${c.title}“ aus den Community Calls entfernen?`)) return;
+  const c=CALLS.find(x=>x.id===id); if(!c || !confirm(`„${c.title}“ aus den Club Calls entfernen?`)) return;
   const { error } = await sb.from("community_calls").delete().eq("id", id);
   if(error){ alert("Löschen fehlgeschlagen: "+(error.message||"")); return; }
   renderCalls();

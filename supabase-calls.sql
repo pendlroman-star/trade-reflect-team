@@ -1,5 +1,5 @@
 -- ============================================================
--- Kings Club Trades Monitor – Community Calls
+-- Kings Club Trades Monitor – Club Calls
 -- ------------------------------------------------------------
 -- Einmal im SQL Editor von Supabase ausführen (New query → einfügen → Run).
 -- Kann gefahrlos mehrfach ausgeführt werden.
