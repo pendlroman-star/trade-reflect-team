@@ -604,7 +604,7 @@
 
           <div class="ef c3">
             <span class="ef-lbl">Symbol</span>
-            <input type="text" id="f_symbol" list="symbolList" value="XAUUSD" placeholder="XAUUSD" oninput="markChips('symChips','f_symbol');updateRisk()" required>
+            <input type="text" id="f_symbol" list="symbolList" value="XAUUSD" placeholder="XAUUSD" oninput="markChips('symChips','f_symbol');updateRisk();autoSessionForSymbol()" required>
             <div class="chips" id="symChips"></div>
           </div>
           <div class="ef c3">
@@ -1025,8 +1025,9 @@ const SESSIONS = [
   { id:"preny",     name:"Pre NY",     color:"#C99A2E", mez:"12:00–14:00", from:12, to:14 },
   { id:"ny",        name:"NY",         color:"#D27360", mez:"14:00–18:00", from:14, to:18 },
   { id:"afterny",   name:"After NY",   color:"#5D7D9E", mez:"18:00–23:00", from:18, to:24 },   /* 23–24 Uhr zählt mit zu After NY */
+  { id:"krypto",    name:"Krypto",     color:"#6E8177", mez:"rund um die Uhr", from:-1, to:-1 },  /* wird nie nach Uhrzeit vorgeschlagen, nur bei Krypto-Symbolen */
 ];
-const SESSION_ALIASES = { "asien":"asia", "new york":"ny", "london-ny-overlap":"ny", "overlap":"ny" };
+const SESSION_ALIASES = { "crypto":"krypto", "asien":"asia", "new york":"ny", "london-ny-overlap":"ny", "overlap":"ny" };
 function sessionName(id){ const s=SESSIONS.find(x=>x.id===id); return s? s.name : ""; }
 function findSession(v){ v=(""+(v||"")).trim().toLowerCase(); if(SESSION_ALIASES[v]) return SESSION_ALIASES[v]; const s=SESSIONS.find(x=>x.id===v || x.name.toLowerCase()===v); return s? s.id : ""; }
 function sessionForHour(h){ const s=SESSIONS.find(x=>h>=x.from && h<x.to); return s ? s.id : "afterny"; }
@@ -1035,6 +1036,7 @@ function viennaHour(){ try{ const p=new Intl.DateTimeFormat("en-GB",{hour:"2-dig
 function migrateSessions(){
   let changed=false;
   trades.forEach(t=>{
+    if(!t.session && isCryptoSym(t.symbol)){ t.session="krypto"; changed=true; }
     if(t.sv===2) return;
     const m=/·\s*(\d{1,2}):(\d{2})\s*[–-]/.exec(t.note||"");
     if(m){ const id=sessionForHour(Number(m[1])%24); if(t.session!==id){ t.session=id; } }
@@ -1099,7 +1101,7 @@ function initForm(){
   document.getElementById("f_account").innerHTML = ACCOUNTS.filter(a=>!a.lost).map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
   document.getElementById("f_style").innerHTML = STYLES.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join("");
   document.getElementById("f_reason").innerHTML = `<option value="">— Grund wählen —</option>` + LOSS_REASONS.map(r=>`<option value="${r}">${r}</option>`).join("");
-  document.getElementById("f_session").innerHTML = `<option value="">— / Krypto</option>` + SESSIONS.map(s=>`<option value="${s.id}">${s.name} · ${s.mez} Uhr</option>`).join("");
+  document.getElementById("f_session").innerHTML = `<option value="">—</option>` + SESSIONS.map(s=>`<option value="${s.id}">${s.name} · ${s.mez}${s.from>=0?" Uhr":""}</option>`).join("");
   document.getElementById("f_session").value = guessSession();
   updateClock();
   document.getElementById("symChips").innerHTML = ["XAUUSD","US30","BTCUSDT","ETHUSDT"].map(s=>`<span class="chip-pick" onclick="pickSym('${s}')">${s}</span>`).join("");
@@ -1117,7 +1119,10 @@ function setDir(v){
   document.getElementById("f_dir").value=v;
   document.querySelectorAll("#tradeForm .seg2-btn").forEach(b=>b.classList.toggle("active", b.classList.contains(v.toLowerCase())));
 }
-function pickSym(s){ document.getElementById("f_symbol").value=s; markChips("symChips","f_symbol"); updateRisk(); }
+function isCryptoSym(sym){ return /(USDT|USDC|BTC|ETH|SOL|XRP|DOGE|BNB|ADA)/i.test(sym||"") && !/^XAU|^XAG/i.test(sym||""); }
+function autoSessionForSymbol(){ const f=document.getElementById("f_session"), sym=document.getElementById("f_symbol").value; if(!f) return;
+  if(isCryptoSym(sym)) f.value="krypto"; else if(f.value==="krypto") f.value=guessSession(); }
+function pickSym(s){ document.getElementById("f_symbol").value=s; markChips("symChips","f_symbol"); updateRisk(); autoSessionForSymbol(); }
 function pickLot(l){ document.getElementById("f_lot").value=l; markChips("lotChips","f_lot"); updateRisk(); }
 function updateRisk(){
   const g=x=>document.getElementById(x);
@@ -1193,7 +1198,7 @@ function editTrade(id){
   g("e_account").innerHTML=ACCOUNTS.map(a=>`<option value="${a.id}">${escapeHtml(a.name)}</option>`).join("");
   g("e_style").innerHTML=STYLES.map(s=>`<option value="${s.id}">${escapeHtml(s.name)}</option>`).join("");
   g("e_reason").innerHTML=`<option value="">— kein Grund —</option>`+LOSS_REASONS.map(r=>`<option value="${r}">${r}</option>`).join("");
-  g("e_session").innerHTML=`<option value="">— / Krypto</option>`+SESSIONS.map(s=>`<option value="${s.id}">${s.name} · ${s.mez} Uhr</option>`).join("");
+  g("e_session").innerHTML=`<option value="">—</option>`+SESSIONS.map(s=>`<option value="${s.id}">${s.name} · ${s.mez}${s.from>=0?" Uhr":""}</option>`).join("");
   g("e_date").value=t.date; g("e_account").value=t.account; g("e_style").value=t.style;
   g("e_symbol").value=t.symbol; g("e_dir").value=t.dir; g("e_pnl").value=t.pnl;
   g("e_lot").value=(t.lot==null?"":String(t.lot).replace(".",",")); g("e_slhit").checked=!!t.slHit; g("e_tphit").checked=!!t.tpHit;
@@ -2174,8 +2179,9 @@ function sessionInfo(){
       <li><b>Pre NY</b> · 12:00–14:00 – Mittagsflaute, Aufbau vor den US-Daten.</li>
       <li><b>NY</b> · 14:00–18:00 – US-Daten, stärkste Bewegungen, viele Fehlausbrüche.</li>
       <li><b>After NY</b> · 18:00–23:00 – Auslaufen des Tages, abnehmende Dynamik.</li>
+      <li><b>Krypto</b> · rund um die Uhr – für BTC, ETH und andere Coins, unabhängig von der Tageszeit.</li>
     </ul>
-    <p class="lead">So erkennst du mit der Zeit, in welcher Session du am besten (oder am undiszipliniertesten) handelst. Krypto läuft 24/7 – lass die Session dort einfach auf „—".</p>
+    <p class="lead">So erkennst du mit der Zeit, in welcher Session du am besten (oder am undiszipliniertesten) handelst. Für Bitcoin, Ethereum und Co. gibt es die eigene Session <b>Krypto</b>. Sie wird automatisch gewählt, sobald du ein Krypto-Symbol einträgst.</p>
     <p class="lead" style="margin-bottom:0"><b>Hinweis:</b> Alle Zeiten in Wiener Ortszeit. Beim Eintragen wird die aktuelle Session automatisch vorgeschlagen.</p>
   `);
 }
@@ -2198,7 +2204,7 @@ function renderSessions(){
         <div class="divbar"><div class="fill ${g.tot>=0?'pos':'neg'}" style="${fill}"></div><div class="mid"></div></div>
         <div style="font-size:11.5px;color:var(--muted);margin-top:6px">${g.n} Trades · ${g.wr}% Winrate · Ø ${fmt(g.tot/g.n)}</div>
       </div>`;
-    }).join("") + `</div>` + (none? `<div class="thin" style="font-size:11px;margin-top:14px">${none} Trades ohne Session (z.B. Krypto)</div>`:'')
+    }).join("") + `</div>` + (none? `<div class="thin" style="font-size:11px;margin-top:14px">${none} Trades ohne Session</div>`:'')
       : `<div class="thin">Noch keine Trades mit Session erfasst.</div>`);
 }
 function render(){ renderRules(); renderHero(); renderWeek(); renderCalendar(); renderLeaderboard(); renderInsights(); renderSessions(); renderLossAnalysis(); renderCards(); renderTable(); renderChart(); }
