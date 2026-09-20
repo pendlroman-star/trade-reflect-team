@@ -109,6 +109,29 @@
   #entryOverlay .modal{max-width:840px}
   #entryOverlay .entry{background:transparent; border:none; box-shadow:none; padding:0; backdrop-filter:none}
   .sec-actions{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  /* Community Calls */
+  .yt{position:relative; width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#0E2A47; cursor:pointer; display:block; border:none; padding:0}
+  .yt img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .35s ease, opacity .2s ease; opacity:.94}
+  .yt:hover{background:#0E2A47; transform:none}
+  .yt:hover img{transform:scale(1.03); opacity:1}
+  .yt iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+  .yt .playbtn{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:64px; height:64px; border-radius:50%; background:rgba(250,249,246,.94); display:grid; place-items:center; box-shadow:0 8px 30px rgba(0,0,0,.35); transition:.18s ease}
+  .yt:hover .playbtn{transform:translate(-50%,-50%) scale(1.07); background:#fff}
+  .yt .playbtn svg{width:24px; height:24px; fill:#0E2A47; margin-left:3px}
+  .yt.sm .playbtn{width:46px; height:46px} .yt.sm .playbtn svg{width:18px; height:18px}
+  .yt .dur{position:absolute; left:12px; bottom:12px; font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#0E2A47; background:var(--signal); padding:3px 8px; border-radius:6px}
+  .callfeat{display:grid; grid-template-columns:1.55fr 1fr; gap:26px; padding:22px; align-items:center; margin-bottom:18px}
+  .callfeat h3{margin:8px 0 8px; font-size:22px; line-height:1.25; letter-spacing:-.02em}
+  .callmeta{font-size:12.5px; color:var(--muted)}
+  .calldesc{color:var(--body); line-height:1.6; font-size:13.5px; white-space:pre-line; margin:0}
+  .callgrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px}
+  .callcard{padding:12px 12px 16px}
+  .callcard h4{margin:12px 4px 4px; font-size:14.5px; line-height:1.35; font-weight:650}
+  .callcard .callmeta{margin:0 4px}
+  .callcard .calldesc{margin:6px 4px 0; font-size:12.5px; color:var(--muted); display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+  .calladmin{display:flex; gap:6px; margin:10px 4px 0}
+  .callfeat .calladmin{margin:14px 0 0}
+  @media(max-width:860px){ .callfeat{grid-template-columns:1fr; gap:16px; padding:14px} .callfeat h3{font-size:19px} }
   /* Team-Seite */
   .icon-btn.on{background:var(--navy); color:#FAF9F6; border-color:transparent}
   .icon-btn .avatar{width:36px; height:36px; font-size:12px}
@@ -429,6 +452,7 @@
           <button onclick="openAccounts();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18M16 14.500h2"/></svg>Konten</button>
           <button onclick="openStyles();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.500V4h7.500L21 14.500 14.500 21 3 11.500z"/><circle cx="7.500" cy="8" r="1.200"/></svg>Kategorien</button>
           <button onclick="openFees();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M14.800 9.300c-.5-.9-1.500-1.400-2.800-1.400-1.700 0-2.900.9-2.900 2.100 0 2.900 5.900 1.400 5.900 4.200 0 1.300-1.300 2.200-3 2.200-1.400 0-2.500-.600-3-1.600M12 6v1.900M12 16.400V18"/></svg>Gebühr erfassen</button>
+          <button onclick="showView('calls');closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M10 8.500v7l6-3.500-6-3.500z"/></svg>Community Calls</button>
           <div style="height:1px;background:var(--stroke2);margin:4px 6px"></div>
           <button onclick="exportCSV();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10.500l5 5 5-5M5 20h14"/></svg>CSV exportieren</button>
           <button onclick="exportJSON();closeMenu()"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10.500l5 5 5-5M5 20h14"/></svg>Backup (JSON)</button>
@@ -582,6 +606,16 @@
   </section>
 </div><!-- /team -->
 
+<div class="view" id="view-calls">
+  <section>
+    <div class="sec-head">
+      <h2>Community Calls</h2>
+      <div class="sec-actions"><span class="note" id="callsNote"></span><button class="primary tiny" id="callAddBtn" onclick="openCallForm()" style="display:none;padding:8px 14px">＋ Video hinzufügen</button></div>
+    </div>
+    <div id="callsBody"></div>
+  </section>
+</div><!-- /calls -->
+
   <div class="foot">
     Deine Trades liegen in deiner persönlichen Cloud-Datenbank – nur du siehst sie.
     Tagesziel und Verlustlimit stellst du je Konto unter „Verwalten“ ein. Sichere gelegentlich ein Backup.
@@ -646,6 +680,22 @@
         <datalist id="lotList"><option value="0,05"></option><option value="0,1"></option><option value="0,2"></option><option value="0,3"></option><option value="0,4"></option><option value="0,5"></option><option value="1"></option><option value="2"></option><option value="3"></option></datalist>
       </form>
     </div>
+  </div>
+</div>
+
+<!-- COMMUNITY CALL ANLEGEN / BEARBEITEN (nur Betreiber) -->
+<div class="overlay" id="callOverlay">
+  <div class="modal">
+    <button class="x" onclick="closeCallForm()">✕</button>
+    <h2 id="callFormTitle">Video hinzufügen</h2>
+    <p class="lead">YouTube-Link einfügen – Titel und Vorschaubild werden automatisch geholt. Auch nicht gelistete Videos funktionieren.</p>
+    <label>YouTube-Link<input type="url" id="cf_url" placeholder="https://www.youtube.com/watch?v=…" oninput="callUrlChanged()"></label>
+    <div id="cf_preview" style="margin:-4px 0 16px"></div>
+    <label>Titel<input type="text" id="cf_title" placeholder="z.B. Community Call – Wochenausblick Gold"></label>
+    <label>Datum des Calls<input type="date" id="cf_date"></label>
+    <label>Beschreibung <span class="muted-note">(optional – Themen, Zeitmarken, Kernaussagen)</span><textarea id="cf_desc" placeholder="Worum ging es?"></textarea></label>
+    <div class="row"><button class="primary" onclick="saveCall()">✓ Speichern</button><button class="ghost" onclick="closeCallForm()">Abbrechen</button></div>
+    <div class="msg" id="cf_msg"></div>
   </div>
 </div>
 
@@ -1790,6 +1840,7 @@ function onLogin(){
   const nm=displayName(); document.getElementById("appTitle").textContent = nm ? nm+"s Trading Dashboard" : "Trading Dashboard";
   const ab=document.getElementById("acctBtn"); if(ab){ ab.style.display=""; ab.title=(nm?nm+" · ":"")+"Mein Konto"; }
   updateAvatarUI(); if(typeof currentView!=="undefined" && currentView==="team") setTimeout(renderTeam, 0);
+  if(typeof currentView!=="undefined" && currentView==="calls") setTimeout(renderCalls, 0);
   document.title = (nm ? nm+"s " : "") + "Trading Dashboard · Kings Club Trades Monitor";
   ensureAccountsForTrades(); ensureStylesForTrades(); dedupeIds(); initForm(); render(); setStatus("Verbunden","ok"); cloudPull(true);
 }
@@ -2281,6 +2332,7 @@ function showView(name){
   if(name==="analyse") setTimeout(renderChart, 0);   /* Diagramm braucht sichtbare Fläche */
   const tb=document.getElementById("teamBtn"); if(tb) tb.classList.toggle("on", name==="team");
   if(name==="team") renderTeam();
+  if(name==="calls") renderCalls();
   window.scrollTo({top:0, behavior:"instant"});
 }
 (function(){ let v="heute"; if(!DEMO){ try{ v=localStorage.getItem("tr_view")||"heute"; }catch(e){} } if(document.getElementById("view-"+v)){ currentView=v; document.querySelectorAll(".view").forEach(x=>x.classList.toggle("active", x.id==="view-"+v)); document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on", b.dataset.view===v)); } })();
@@ -2494,6 +2546,95 @@ function openTrader(i){
     <div style="font-weight:600;font-size:13.5px;margin:18px 0 4px">Letzte Trades</div>
     <div>${(k.trades||[]).map(t=>tradeRow(t,u,true)).join("") || '<div class="tsub">Noch keine Trades.</div>'}</div>`;
   document.getElementById("traderOverlay").classList.add("show");
+}
+
+/* =====================================================================
+   COMMUNITY CALLS – YouTube-Aufzeichnungen, gepflegt vom Betreiber
+   ===================================================================== */
+let CALLS=[], callsAdmin=false, editingCallId=null;
+function ytId(url){
+  const u=(url||"").trim(); let m;
+  if((m=/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|live\/|shorts\/|embed\/)|youtu\.be\/)([A-Za-z0-9_-]{11})/.exec(u))) return m[1];
+  if(/^[A-Za-z0-9_-]{11}$/.test(u)) return u;
+  return "";
+}
+function ytThumb(id, big){ return `https://i.ytimg.com/vi/${id}/${big?"maxresdefault":"hqdefault"}.jpg`; }
+function ytPlayer(id, title, cls, badge){
+  return `<button class="yt ${cls||""}" onclick="playYt(this,'${id}')" aria-label="Video abspielen: ${escapeHtml(title||"")}">
+    <img src="${ytThumb(id,!cls)}" alt="" loading="lazy" onload="if(this.naturalWidth<200&&!this.dataset.f){this.dataset.f=1;this.src='${ytThumb(id,false)}'}" onerror="if(!this.dataset.f){this.dataset.f=1;this.src='${ytThumb(id,false)}'}">
+    ${badge?`<span class="dur">${badge}</span>`:""}
+    <span class="playbtn"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></button>`;
+}
+/* Erst beim Klick wird YouTube geladen (schnell und datensparsam; ohne Cookies bis zum Abspielen) */
+function playYt(btn, id){
+  document.querySelectorAll(".yt iframe").forEach(f=>{ const b=f.closest(".yt"); if(b && b!==btn && b.dataset.html){ b.innerHTML=b.dataset.html; } });
+  btn.dataset.html = btn.innerHTML;
+  btn.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&modestbranding=1" title="YouTube-Video" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+}
+function callDate(d){ if(!d) return ""; const p=d.split("-"); const mon=["Jänner","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"][Number(p[1])-1]||""; return `${Number(p[2])}. ${mon} ${p[0]}`; }
+function callAdminBtns(c){ return callsAdmin ? `<div class="calladmin"><button class="ghost tiny" onclick="openCallForm('${c.id}')">✎ Bearbeiten</button><button class="danger tiny" onclick="deleteCall('${c.id}')">Löschen</button></div>` : ""; }
+
+const DEMO_CALLS_NOTE = "In der Demo siehst du nur den Aufbau. Nach der Anmeldung stehen hier die Aufzeichnungen der Community Calls.";
+async function renderCalls(){
+  const body=document.getElementById("callsBody"), note=document.getElementById("callsNote"), add=document.getElementById("callAddBtn");
+  const empty=(h,p)=>{ body.innerHTML=`<div class="card teamcta"><h3>${h}</h3><p>${p}</p></div>`; };
+  add.style.display="none"; note.textContent="";
+  if(DEMO){ empty("Community Calls", DEMO_CALLS_NOTE); return; }
+  if(!connected()){ empty("Community Calls", "Bitte zuerst anmelden."); return; }
+  note.textContent="Lädt…";
+  const [{ data, error }, adm] = await Promise.all([
+    sb.from("community_calls").select("id,title,url,video_id,call_date,description,created_at").order("call_date",{ascending:false, nullsFirst:false}).order("created_at",{ascending:false}),
+    sb.rpc("is_admin").then(r=>!!r.data).catch(()=>false) ]);
+  if(error){ note.textContent=""; const missing=/community_calls|schema cache|does not exist|PGRST205|42P01/i.test((error.message||"")+(error.code||""));
+    empty("Noch nicht eingerichtet", missing ? "In der Datenbank fehlt noch die Tabelle für die Community Calls. Der Betreiber muss einmal die Datei supabase-calls.sql bei Supabase ausführen." : "Laden fehlgeschlagen: "+escapeHtml(error.message||"")); return; }
+  CALLS = data||[]; callsAdmin = adm; add.style.display = callsAdmin ? "" : "none";
+  note.textContent = CALLS.length ? CALLS.length+(CALLS.length===1?" Aufzeichnung":" Aufzeichnungen") : "";
+  drawCalls();
+}
+function drawCalls(){
+  const body=document.getElementById("callsBody");
+  if(!CALLS.length){ body.innerHTML=`<div class="card teamcta"><h3>Noch keine Aufzeichnungen</h3><p>${callsAdmin?"Füge oben rechts das erste Video hinzu.":"Sobald der erste Community Call online ist, findest du ihn hier."}</p></div>`; return; }
+  const [f, ...rest] = CALLS;
+  body.innerHTML = `<div class="card callfeat">
+      <div>${ytPlayer(f.video_id, f.title, "", "Neu")}</div>
+      <div><div class="callmeta">${callDate(f.call_date)||"Aktueller Call"}</div><h3>${escapeHtml(f.title)}</h3>${f.description?`<p class="calldesc">${escapeHtml(f.description)}</p>`:""}${callAdminBtns(f)}</div>
+    </div>` + (rest.length ? `<div class="sec-head" style="margin-top:30px"><h2 style="font-size:16px">Frühere Calls</h2></div><div class="callgrid">` + rest.map(c=>`
+      <div class="card callcard">${ytPlayer(c.video_id, c.title, "sm")}
+        <h4>${escapeHtml(c.title)}</h4><div class="callmeta">${callDate(c.call_date)}</div>${c.description?`<p class="calldesc">${escapeHtml(c.description)}</p>`:""}${callAdminBtns(c)}</div>`).join("") + `</div>` : "");
+}
+/* ----- Pflege (nur Betreiber; die Datenbank erzwingt das zusätzlich) ----- */
+function openCallForm(id){
+  editingCallId = id||null; const c = id ? CALLS.find(x=>x.id===id) : null;
+  document.getElementById("callFormTitle").textContent = c ? "Video bearbeiten" : "Video hinzufügen";
+  document.getElementById("cf_url").value = c ? c.url : ""; document.getElementById("cf_title").value = c ? c.title : "";
+  document.getElementById("cf_date").value = c ? (c.call_date||"") : today(); document.getElementById("cf_desc").value = c ? (c.description||"") : "";
+  document.getElementById("cf_msg").textContent=""; callUrlChanged(true);
+  document.getElementById("callOverlay").classList.add("show");
+}
+function closeCallForm(){ document.getElementById("callOverlay").classList.remove("show"); }
+let _oeTimer=null;
+function callUrlChanged(keepTitle){
+  const id=ytId(document.getElementById("cf_url").value), pv=document.getElementById("cf_preview");
+  pv.innerHTML = id ? `<img src="${ytThumb(id,false)}" alt="" style="width:160px;border-radius:10px;display:block">` : "";
+  clearTimeout(_oeTimer); if(!id || keepTitle) return;
+  _oeTimer=setTimeout(async ()=>{ try{ const r=await fetch("https://www.youtube.com/oembed?format=json&url="+encodeURIComponent("https://www.youtube.com/watch?v="+id)); if(!r.ok) return; const j=await r.json(); const t=document.getElementById("cf_title"); if(j.title && !t.value.trim()) t.value=j.title; }catch(e){} }, 350);
+}
+async function saveCall(){
+  const m=document.getElementById("cf_msg"), url=document.getElementById("cf_url").value.trim(), id=ytId(url), title=document.getElementById("cf_title").value.trim();
+  if(!id){ m.textContent="⚠︎ Das sieht nicht nach einem YouTube-Link aus."; return; }
+  if(!title){ m.textContent="⚠︎ Bitte einen Titel eingeben."; return; }
+  const row={ title, url, video_id:id, call_date:document.getElementById("cf_date").value||null, description:document.getElementById("cf_desc").value.trim()||null };
+  m.textContent="Speichert…";
+  const q = editingCallId ? sb.from("community_calls").update(row).eq("id", editingCallId) : sb.from("community_calls").insert(row);
+  const { error } = await q;
+  if(error){ m.textContent = /row-level security|permission|42501/i.test(error.message||"") ? "⚠︎ Nur der Betreiber darf Videos pflegen." : "⚠︎ "+(error.message||"Speichern fehlgeschlagen"); return; }
+  closeCallForm(); renderCalls();
+}
+async function deleteCall(id){
+  const c=CALLS.find(x=>x.id===id); if(!c || !confirm(`„${c.title}“ aus den Community Calls entfernen?`)) return;
+  const { error } = await sb.from("community_calls").delete().eq("id", id);
+  if(error){ alert("Löschen fehlgeschlagen: "+(error.message||"")); return; }
+  renderCalls();
 }
 </script>
 </body>

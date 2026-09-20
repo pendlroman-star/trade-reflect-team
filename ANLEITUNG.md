@@ -107,6 +107,16 @@ Das **Personen-Gruppen-Symbol** oben rechts öffnet die Team-Seite. Sie zeigt je
 
 ---
 
+## Community Calls
+
+Im Menü **Verwalten** (Regler-Symbol) gibt es den Punkt **Community Calls**. Dort stehen die Aufzeichnungen als YouTube-Videos: der neueste Call groß oben, frühere als Karten darunter. Ein Klick spielt das Video direkt auf der Seite ab. YouTube wird erst beim Klick geladen.
+
+- **Sehen** dürfen die Videos alle angemeldeten Mitglieder.
+- **Hinzufügen, bearbeiten, löschen** darf nur der Betreiber. Bei ihm erscheint der Knopf **„＋ Video hinzufügen“**: YouTube-Link einfügen, Titel wird automatisch geholt, Datum und Beschreibung ergänzen, speichern. Auch nicht gelistete Videos funktionieren.
+- **Einmalige Einrichtung:** Datei `supabase-calls.sql` im SQL Editor von Supabase ausführen und dabei in der Zeile mit `BETREIBER@BEISPIEL.AT` die eigene Anmelde-Adresse eintragen. Weitere Betreiber lassen sich dort als zusätzliche Zeile ergänzen.
+
+---
+
 ## Später: Team-Ranking
 
 Die Datenbank ist dafür schon vorbereitet (Sicht `trades_flat` mit Anzeigenamen).
