@@ -112,7 +112,8 @@
   /* Orders je Trade */
   .orow{display:grid; grid-template-columns:64px 1fr 1fr 1fr 34px; gap:8px; align-items:center; margin-bottom:8px}
   .orow .on{font-size:12px; color:var(--muted); font-weight:600}
-  .orow input{padding:9px 10px; font-size:13.5px}
+  .orow input{padding:10px 11px; font-size:14px}
+  .orow .o-pnl{font-weight:600}
   .orow .odel{width:34px; height:36px; padding:0; justify-content:center; color:var(--muted)}
   .ohead{display:grid; grid-template-columns:64px 1fr 1fr 1fr 34px; gap:8px; font-size:11px; color:var(--faint); margin:2px 0 6px}
   .osum{font-size:12.5px; color:var(--muted); background:var(--glass2); border-radius:10px; padding:9px 12px; margin-top:6px}
@@ -122,7 +123,7 @@
   tr.osub td{padding-top:4px; padding-bottom:6px; color:var(--muted); font-size:12px; border-bottom:none; background:var(--glass2)}
   tr.osub td:first-child{padding-left:28px}
   tr.osub.last td{border-bottom:1px solid var(--rowline)}
-  @media(max-width:720px){ .orow,.ohead{grid-template-columns:52px 1fr 1fr 1fr 30px; gap:6px} .orow .on{font-size:11px} }
+  @media(max-width:720px){ .orow,.ohead{grid-template-columns:44px .8fr 1.1fr 1.1fr 28px; gap:5px} .orow .on{font-size:11px} .orow input{padding:9px 6px; font-size:13px} .orow .odel{width:28px} .ohead span{font-size:10px} }
   /* Club Calls */
   .yt{position:relative; width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden; background:#0E2A47; cursor:pointer; display:block; border:none; padding:0}
   .yt img{width:100%; height:100%; object-fit:cover; display:block; transition:transform .35s ease, opacity .2s ease; opacity:.94}
@@ -270,7 +271,6 @@
   .seg2-btn{justify-content:center; padding:11px 8px; border-radius:11px; font-weight:600; font-size:14px; letter-spacing:0; text-transform:none}
   .seg2-btn.long.active{background:var(--posbg); border-color:var(--green); color:var(--green)}
   .seg2-btn.short.active{background:var(--negbg); border-color:var(--red); color:var(--red)}
-  .ef-pnl input{font-size:19px; font-weight:600; font-family:var(--font-mono)}
   .reason-field{background:rgba(194,95,74,.07); border:1px solid rgba(194,95,74,.32); border-radius:12px; padding:13px 15px}
   .ef-actions{display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-top:2px}
   .toggle-chip{display:inline-flex; align-items:center; gap:8px; cursor:pointer; padding:11px 18px; border-radius:100px; background:var(--glass2); border:1px solid var(--stroke2); font-size:13px; font-weight:600; color:var(--muted); user-select:none; transition:.15s}
@@ -665,23 +665,22 @@
             <input type="hidden" id="f_dir" value="Long">
           </div>
 
-          <div class="ef c2">
-            <span class="ef-lbl">Lot</span>
-            <input type="text" id="f_lot" list="lotList" placeholder="0,2" oninput="markChips('lotChips','f_lot');updateRisk()">
-            <div class="chips" id="lotChips"></div>
-          </div>
-          <label class="ef c2">Entry <span class="muted-note">(Kurs)</span><input type="number" id="f_entry" step="any" placeholder="2400.00" oninput="updateRisk()"></label>
-          <label class="ef c2">Stop-Loss <span class="muted-note">(Kurs)</span><input type="number" id="f_sl" step="any" placeholder="2395.00" oninput="updateRisk()"></label>
-
-          <label class="ef c3 ef-pnl"><span id="f_pnlLbl">Ergebnis USD</span><input type="number" id="f_pnl" step="0.01" placeholder="+250 / −120" oninput="toggleReason();updateRisk()" required></label>
+          <label class="ef c3">Stop-Loss <span class="muted-note">(Kurs)</span><input type="number" id="f_sl" step="any" placeholder="2395.00" oninput="updateRisk()"></label>
           <div class="ef c3">
             <span class="ef-lbl">Risiko / R <span class="muted-note">(automatisch)</span></span>
             <div id="riskInfo" style="font-size:12.5px;color:var(--muted);background:var(--glass2);border:1px dashed var(--stroke2);border-radius:11px;padding:12px;text-transform:none;letter-spacing:0;font-weight:400;line-height:1.5">Entry + Stop-Loss + Lot eingeben → Risiko wird berechnet</div>
           </div>
 
           <div class="full" id="ordersWrap">
+            <span class="ef-lbl">Orders <span class="muted-note">(ein Trade ist eine Idee und darf aus mehreren Orders bestehen – gezählt wird der Trade)</span></span>
+            <div class="ohead"><span></span><span>Lot</span><span>Entry (Kurs)</span><span>Ergebnis USD</span><span></span></div>
+            <div class="orow"><span class="on">Order 1</span>
+              <input type="text" id="f_lot" class="o-lot" list="lotList" placeholder="0,2" oninput="markChips('lotChips','f_lot');orderChanged()" onfocus="activeLot=this">
+              <input type="number" id="f_entry" class="o-entry" step="any" placeholder="4350.00" oninput="orderChanged()">
+              <input type="number" id="f_pnl" class="o-pnl" step="0.01" placeholder="+250 / −120" oninput="orderChanged()" required>
+              <span></span></div>
             <div id="extraOrders"></div>
-            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><button type="button" class="ghost tiny" onclick="addOrderRow('extraOrders')">＋ weitere Order</button><span class="thin" style="font-size:12px">Ein Trade ist eine Idee – sie darf aus mehreren Orders bestehen. Gezählt wird der Trade.</span></div>
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:4px"><button type="button" class="ghost tiny" onclick="addOrderRow('extraOrders')">＋ weitere Order</button><div class="chips" id="lotChips"></div></div>
             <div class="osum" id="orderSum" style="display:none"></div>
           </div>
 
@@ -930,7 +929,8 @@ Sonstiges"></textarea></label>
       <label>Richtung<select id="e_dir"><option value="Long">Long ▲</option><option value="Short">Short ▼</option></select></label>
       <label>Stop-Loss (Kurs)<input type="number" id="e_sl" step="any"></label>
       <div style="grid-column:1/-1">
-        <div style="font-size:12.5px;color:var(--muted);font-weight:600;margin-bottom:8px">Orders <span class="muted-note">(Lot · Entry · Ergebnis)</span></div>
+        <div style="font-size:12.5px;color:var(--muted);font-weight:600;margin-bottom:8px">Orders</div>
+        <div class="ohead"><span></span><span>Lot</span><span>Entry (Kurs)</span><span>Ergebnis USD</span><span></span></div>
         <div id="e_orders"></div>
         <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><button type="button" class="ghost tiny" onclick="addOrderRow('e_orders')">＋ Order hinzufügen</button></div>
         <div class="osum" id="e_orderSum" style="display:none"></div>
@@ -1197,7 +1197,8 @@ function isCryptoSym(sym){ return /(USDT|USDC|BTC|ETH|SOL|XRP|DOGE|BNB|ADA)/i.te
 function autoSessionForSymbol(){ const f=document.getElementById("f_session"), sym=document.getElementById("f_symbol").value; if(!f) return;
   if(isCryptoSym(sym)) f.value="krypto"; else if(f.value==="krypto") f.value=guessSession(); }
 function pickSym(s){ document.getElementById("f_symbol").value=s; markChips("symChips","f_symbol"); updateRisk(); autoSessionForSymbol(); }
-function pickLot(l){ document.getElementById("f_lot").value=l; markChips("lotChips","f_lot"); updateRisk(); }
+let activeLot=null;
+function pickLot(l){ const el=(activeLot && document.body.contains(activeLot)) ? activeLot : document.getElementById("f_lot"); el.value=l; markChips("lotChips","f_lot"); orderChanged(); }
 function updateRisk(){
   const g=x=>document.getElementById(x);
   const agg=aggregateOrders(formOrders());
@@ -1230,9 +1231,9 @@ function applyOrders(t){
 }
 function orderRowHtml(i, o){ o=o||{};
   return `<div class="orow"><span class="on">Order ${i}</span>
-    <input class="o-lot" type="text" list="lotList" placeholder="Lot" value="${o.lot!=null?String(o.lot).replace(".",","):""}" oninput="orderChanged()">
-    <input class="o-entry" type="number" step="any" placeholder="Entry" value="${o.entry!=null?o.entry:""}" oninput="orderChanged()">
-    <input class="o-pnl" type="number" step="0.01" placeholder="Ergebnis USD" value="${o.pnl!=null?o.pnl:""}" oninput="orderChanged()">
+    <input class="o-lot" type="text" list="lotList" placeholder="0,2" value="${o.lot!=null?String(o.lot).replace(".",","):""}" oninput="orderChanged()" onfocus="activeLot=this">
+    <input class="o-entry" type="number" step="any" placeholder="4350.00" value="${o.entry!=null?o.entry:""}" oninput="orderChanged()">
+    <input class="o-pnl" type="number" step="0.01" placeholder="+250 / −120" value="${o.pnl!=null?o.pnl:""}" oninput="orderChanged()">
     <button type="button" class="ghost tiny odel" title="Order entfernen" onclick="this.closest('.orow').remove();renumberOrders(this);orderChanged()">✕</button></div>`; }
 function renumberOrders(){ ["extraOrders","e_orders"].forEach(id=>{ const c=document.getElementById(id); if(!c) return; const off = id==="extraOrders" ? 2 : 1; [...c.querySelectorAll(".orow .on")].forEach((el,i)=>el.textContent="Order "+(i+off)); }); }
 function readOrderRows(containerId){ const c=document.getElementById(containerId); if(!c) return []; return [...c.querySelectorAll(".orow")].map(r=>({ lot:numOrNull(r.querySelector(".o-lot").value), entry:numOrNull(r.querySelector(".o-entry").value), pnl:numOrNull(r.querySelector(".o-pnl").value) })); }
@@ -1246,8 +1247,8 @@ function formOrders(){ const g=x=>document.getElementById(x);
 function sumHtml(orders){ const a=aggregateOrders(orders.filter(o=>o.pnl!=null||o.lot!=null||o.entry!=null));
   return `<b>${orders.length} Orders</b> · Gesamt <b class="num ${cls(a.pnl)}">${fmt(a.pnl)} USD</b>${a.lot!=null?` · Lot <b>${String(a.lot).replace(".",",")}</b>`:""}${a.entry!=null?` · Ø Entry <b>${a.entry.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2})}</b>`:""}`; }
 function orderChanged(){
-  const extra=document.getElementById("extraOrders"); const sum=document.getElementById("orderSum"); const lbl=document.getElementById("f_pnlLbl");
-  if(extra && sum){ const n=extra.querySelectorAll(".orow").length; sum.style.display = n ? "" : "none"; if(lbl) lbl.textContent = n ? "Ergebnis USD · Order 1" : "Ergebnis USD"; if(n) sum.innerHTML=sumHtml(formOrders()); }
+  const extra=document.getElementById("extraOrders"); const sum=document.getElementById("orderSum");
+  if(extra && sum){ const n=extra.querySelectorAll(".orow").length; sum.style.display = n ? "" : "none"; if(n) sum.innerHTML=sumHtml(formOrders()); }
   const eo=document.getElementById("e_orders"), es=document.getElementById("e_orderSum");
   if(eo && es){ const rows=readOrderRows("e_orders"); es.style.display = rows.length>1 ? "" : "none"; if(rows.length>1) es.innerHTML=sumHtml(rows); }
   toggleReason(); updateRisk();
