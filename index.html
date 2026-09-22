@@ -310,7 +310,11 @@
   .table-card{overflow:hidden}
   .table-scroll{overflow:auto; max-height:520px}
   /* Historie: am Desktop kein eigenes Scrollfenster – die Seite scrollt, die Kopfzeile der Tabelle bleibt unter der Seitenkopfzeile stehen */
-  @media(min-width:721px){ .hist-scroll{max-height:none; overflow:visible} .table-card:has(.hist-scroll){overflow:visible} .hist-scroll thead th{top:66px} .hist-scroll thead th:first-child{border-top-left-radius:var(--radius)} .hist-scroll thead th:last-child{border-top-right-radius:var(--radius)} }
+  .hist-scroll thead th{padding:12px 11px} .hist-scroll tbody td{padding:12px 11px}
+  .hist-scroll td:nth-child(8){min-width:190px; max-width:none !important; line-height:1.4}
+  .hist-scroll td:last-child{padding-left:4px} .hist-scroll .row-del{padding:4px 7px; margin-left:2px}
+  @media(min-width:721px) and (max-width:1099px){ .hist-scroll{max-height:none} }
+  @media(min-width:1100px){ .hist-scroll{max-height:none; overflow:visible} .table-card:has(.hist-scroll){overflow:visible} .hist-scroll thead th{top:66px} .hist-scroll thead th:first-child{border-top-left-radius:var(--radius)} .hist-scroll thead th:last-child{border-top-right-radius:var(--radius)} }
   table{width:100%; border-collapse:collapse; font-size:13.5px}
   thead th{position:sticky; top:0; z-index:2; text-align:left; padding:14px 16px; font-size:10.5px; text-transform:uppercase; letter-spacing:.09em; color:var(--muted); font-weight:600; background:var(--thead); backdrop-filter:blur(8px); border-bottom:1px solid var(--stroke2)}
   thead th.r{text-align:right}
@@ -1709,7 +1713,7 @@ function renderTable(){
     const a = acc(t.account), s = styleOf(t.style);
     const rm = rMultiple(t);
     return `<tr>
-      <td class="num" style="color:var(--muted)">${t.date}</td>
+      <td class="num" style="color:var(--muted)" title="${t.date}">${t.date.slice(8,10)}.${t.date.slice(5,7)}.${t.date.slice(2,4)}</td>
       <td><span class="chip"><span class="cd" style="background:${a?a.color:'#888'}"></span>${a?escapeHtml(a.name):escapeHtml(t.account)}</span></td>
       <td><span class="chip"><span class="cd" style="background:${s?s.color:'#888'}"></span>${escapeHtml(styleName(t.style))}</span></td>
       <td style="font-weight:600">${escapeHtml(t.symbol)}${t.lot!=null?` <span class="thin" style="font-weight:500">${String(t.lot).replace(".",",")}</span>`:""}${orderCount(t)>1?`<span class="obadge" onclick="toggleOrders(${t.id})" title="Orders anzeigen">${orderCount(t)} Orders ▾</span>`:""}</td>
@@ -1717,7 +1721,7 @@ function renderTable(){
       <td class="r num ${t.pnl>=0?'pos':'neg'}">${fmt(t.pnl)}</td>
       <td class="r num ${rm?cls(rm.r):''}" ${rm&&rm.est?'title="geschätzt (Median der SL-HIT-Verluste)"':''} style="${rm?'':'color:var(--faint)'}">${rm?fmtR(rm):"—"}</td>
       <td style="white-space:normal;color:var(--muted);max-width:240px">${stops.has(t.id)?`<span style="display:inline-block;background:rgba(194,95,74,.2);color:var(--red);border-radius:100px;padding:1px 8px;font-size:11px;font-weight:700;margin-right:6px">⛔ nach Stopp</span>`:""}${t.slHit?`<span style="display:inline-block;background:rgba(169,118,47,.15);color:var(--amber);border-radius:100px;padding:1px 8px;font-size:11px;font-weight:600;margin-right:6px">🎯 SL</span>`:""}${t.tpHit?`<span style="display:inline-block;background:rgba(32,91,82,.15);color:var(--green);border-radius:100px;padding:1px 8px;font-size:11px;font-weight:600;margin-right:6px">🎯 TP</span>`:""}${t.reason?`<span style="display:inline-block;background:rgba(194,95,74,.13);color:var(--red);border-radius:100px;padding:1px 8px;font-size:11px;font-weight:600;margin-right:6px">⚠︎ ${escapeHtml(t.reason)}</span>`:""}${escapeHtml(t.note)|| ((t.reason||t.slHit||t.tpHit||stops.has(t.id))?"":"—")}</td>
-      <td style="text-align:right;white-space:nowrap"><button class="tiny row-del" onclick="duplicateTrade(${t.id})" title="Duplizieren">⧉</button> <button class="tiny row-del" onclick="editTrade(${t.id})" title="Bearbeiten">✎</button> <button class="danger tiny row-del" onclick="delTrade(${t.id})" title="Löschen">✕</button></td>
+      <td style="text-align:right;white-space:nowrap"><button class="tiny row-del" onclick="duplicateTrade(${t.id})" title="Duplizieren">⧉</button><button class="tiny row-del" onclick="editTrade(${t.id})" title="Bearbeiten">✎</button><button class="danger tiny row-del" onclick="delTrade(${t.id})" title="Löschen">✕</button></td>
     </tr>${orderCount(t)>1 ? tradeOrders(t).map((o,i,arr)=>`<tr class="osub ${i===arr.length-1?'last':''} o-${t.id}" style="display:${openOrders.has(t.id)?'table-row':'none'}"><td colspan="3">Order ${i+1}</td><td class="num">${o.lot!=null?"Lot "+String(o.lot).replace(".",","):""}</td><td class="num">${o.entry!=null?"Entry "+o.entry.toLocaleString("de-DE",{minimumFractionDigits:2,maximumFractionDigits:2}):""}</td><td class="r num ${cls(o.pnl||0)}">${fmt(o.pnl||0)}</td><td colspan="3"></td></tr>`).join("") : ""}`;
   }).join("");
 }
