@@ -163,6 +163,7 @@
   .ttr .cd{width:7px; height:7px; border-radius:50%; flex:none} .ttr .sym{font-weight:600; color:var(--text)} .ttr .p{margin-left:auto; font-weight:600}
   .ttr .dt{color:var(--faint); font-size:11.5px; width:40px; flex:none}
   .ttr{white-space:nowrap} .ttr .cat{color:var(--muted); overflow:hidden; text-overflow:ellipsis; min-width:0} .ttr .p{flex:none; padding-left:8px}
+  .wktbl thead th{padding:10px 10px; font-size:10px} .wktbl tbody td{padding:9px 10px; white-space:nowrap} .wktbl .tag-dir{font-size:10.5px; padding:2px 6px}
   .teamcta{padding:40px 28px; text-align:center} .teamcta h3{margin:0 0 8px; font-size:18px} .teamcta p{color:var(--muted); max-width:520px; margin:0 auto 18px; line-height:1.55}
   @media(max-width:720px){ .tsum{grid-template-columns:1fr; gap:10px} }
   button{font-family:inherit; cursor:pointer; color:var(--text); background:var(--glass); border:1px solid var(--stroke); border-radius:11px;
@@ -2458,8 +2459,12 @@ function buildTeamCard(){
   const gw=wins.reduce((s,t)=>s+t.pnl,0), gl=Math.abs(losses.reduce((s,t)=>s+t.pnl,0));
   const cats = STYLES.map(st=>{ const l=list.filter(t=>t.style===st.id), w=l.filter(t=>t.pnl>0).length;
     return { name:st.name, color:st.color, n:l.length, total:conv(l.reduce((a,t)=>a+t.pnl,0)), wr:l.length?Math.round(w/l.length*100):0 }; }).filter(c=>c.n>0);
-  const recent=[...list].sort((a,b)=> b.date.localeCompare(a.date)||b.id-a.id).slice(0,30).map(t=>{ const st=styleOf(t.style), rm=rMultiple(t);
-    return { d:t.date, sym:t.symbol, dir:t.dir, pnl:conv(t.pnl), cat:st?st.name:"", color:st?st.color:"#8B8A84", r: rm ? Math.round(rm.r*10)/10 : null }; });
+  const _d=new Date(), _ws=new Date(_d); _ws.setDate(_d.getDate()-((_d.getDay()+6)%7)); const weekStart=isoLocal(_ws);
+  const sorted=[...list].sort((a,b)=> b.date.localeCompare(a.date)||b.id-a.id);
+  const pick=sorted.filter(t=>t.date>=weekStart); const rest=sorted.filter(t=>t.date<weekStart).slice(0, Math.max(0,30-pick.length));
+  const recent=[...pick,...rest].map(t=>{ const st=styleOf(t.style), rm=rMultiple(t);
+    return { d:t.date, sym:t.symbol, dir:t.dir, pnl:conv(t.pnl), cat:st?st.name:"", color:st?st.color:"#8B8A84", r: rm ? Math.round(rm.r*10)/10 : null,
+             entry: (t.entry!=null && t.entry!=="") ? Number(t.entry) : null, ses: sessionName(t.session)||"" }; });
   return { v:1, unit: usd?"usd":"pct", n:list.length, wr:list.length?Math.round(wins.length/list.length*100):0, pf: gl>0 ? Math.round(gw/gl*100)/100 : null,
            total:conv(list.reduce((s,t)=>s+t.pnl,0)), days:dmap, counts:cnt, cats, trades:recent };
 }
@@ -2535,6 +2540,24 @@ function drawTeam(){
     </div>`; }).join("") || `<div class="card teamcta"><p>Noch niemand im Team sichtbar.</p></div>`;
   window._teamRows = rows;
 }
+function weekTradesTable(k,u){
+  const d=new Date(), ws=new Date(d); ws.setDate(d.getDate()-((d.getDay()+6)%7)); const wk=isoLocal(ws);
+  const list=(k.trades||[]).filter(t=>t.d>=wk);
+  const sum=list.reduce((a,t)=>a+t.pnl,0);
+  const fmtEntry=v=> v==null||isNaN(v) ? "—" : Number(v).toLocaleString("de-DE",{minimumFractionDigits: Math.abs(v)>=1000?2:2, maximumFractionDigits:2});
+  const head=`<div style="display:flex;justify-content:space-between;align-items:baseline;margin:20px 0 8px"><div style="font-weight:600;font-size:13.5px">Trades dieser Woche</div><div class="tsub">${list.length} ${list.length===1?"Trade":"Trades"}${list.length?` · <span class="num ${cls(sum)}" style="font-weight:600">${tnum(sum)} ${tunit(u)}</span>`:""}</div></div>`;
+  if(!list.length) return head+`<div class="tsub" style="padding:14px 0">In dieser Woche noch keine Trades.</div>`;
+  return head+`<div class="table-scroll wktbl" style="max-height:340px;border:1px solid var(--stroke2);border-radius:12px"><table style="font-size:12.5px">
+    <thead><tr><th>Datum</th><th>Symbol</th><th>Richtung</th><th class="r">Entry</th><th>Session</th><th>Kategorie</th><th class="r">Ergebnis</th></tr></thead>
+    <tbody>${list.map(t=>`<tr>
+      <td class="num" style="color:var(--muted)">${t.d.slice(8,10)}.${t.d.slice(5,7)}.</td>
+      <td style="font-weight:600">${escapeHtml(t.sym||"")}</td>
+      <td><span class="tag-dir ${t.dir==='Long'?'long':'short'}">${t.dir}</span></td>
+      <td class="r num" style="font-weight:500">${fmtEntry(t.entry)}</td>
+      <td style="color:var(--body)">${escapeHtml(t.ses||"—")}</td>
+      <td><span style="display:inline-flex;align-items:center;gap:6px"><span class="cd" style="width:7px;height:7px;border-radius:50%;background:${t.color};flex:none"></span>${escapeHtml(t.cat||"—")}</span></td>
+      <td class="r num ${cls(t.pnl)}" style="font-weight:600">${tnum(t.pnl)}${u==="pct"?" %":""}</td></tr>`).join("")}</tbody></table></div>`;
+}
 function openTrader(i){
   const r=(window._teamRows||[])[i]; if(!r) return; const c=r.c, k=c.card||{}, u=k.unit;
   const maxAbs=Math.max(1,...(k.cats||[]).map(x=>Math.abs(x.total)));
@@ -2543,8 +2566,7 @@ function openTrader(i){
     <div class="tstats" style="grid-template-columns:repeat(4,1fr)">${["today","week","month","total"].map(p=>`<div class="tstat"><div class="v num ${cls(r.s[p])}">${tnum(r.s[p])} ${tunit(u)}</div><div class="k">${{today:"Heute",week:"Woche",month:"Monat",total:"Gesamt"}[p]}</div></div>`).join("")}</div>
     ${sparkSvg(k)}
     ${(k.cats||[]).length?`<div style="font-weight:600;font-size:13.5px;margin:16px 0 8px">Kategorien</div>${k.cats.sort((a,b)=>b.total-a.total).map(x=>`<div style="margin-bottom:10px"><div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span><span class="cd" style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${x.color};margin-right:6px"></span>${escapeHtml(x.name)} <span style="color:var(--muted)">· ${x.n} Trades · ${x.wr}%</span></span><span class="num ${cls(x.total)}" style="font-weight:600">${tnum(x.total)} ${tunit(u)}</span></div><div class="track" style="height:6px"><span style="width:${Math.abs(x.total)/maxAbs*100}%;background:${x.total>=0?'var(--posfill)':'var(--negfill)'}"></span></div></div>`).join("")}`:""}
-    <div style="font-weight:600;font-size:13.5px;margin:18px 0 4px">Letzte Trades</div>
-    <div>${(k.trades||[]).map(t=>tradeRow(t,u,true)).join("") || '<div class="tsub">Noch keine Trades.</div>'}</div>`;
+    ${weekTradesTable(k,u)}`;
   document.getElementById("traderOverlay").classList.add("show");
 }
 
