@@ -241,7 +241,9 @@
   .acct .mini{display:flex; gap:18px; margin-top:16px}
   .acct .mini .mi .v{font-weight:600; font-size:15px}
   .acct .mini .mi .k{font-size:11.5px; color:var(--muted); margin-top:1px}
-  .aspark{margin-top:14px}
+  .aspark{margin-top:14px; position:relative; cursor:crosshair; padding-top:26px}
+  .sp-tip{position:absolute; top:0; left:0; font-size:11.5px; color:var(--body); background:var(--glass); border:1px solid var(--stroke2); border-radius:8px; padding:3px 8px; white-space:nowrap; box-shadow:0 4px 14px -8px rgba(14,42,71,.25); pointer-events:none}
+  .sp-tip b{color:var(--text)} .sp-tip .num{font-weight:600; margin-left:2px}
   .aspark svg{display:block; width:100%; height:44px}
   .asparkmeta{display:flex; justify-content:space-between; gap:8px; font-size:10.5px; color:var(--faint); margin-top:5px; flex-wrap:wrap}
   .meter{margin-top:16px}
@@ -1647,15 +1649,38 @@ function acctSpark(a, list, feeSum){
   const up = pts[pts.length-1]>=base; const col = up ? "var(--posfill)" : "var(--negfill)";
   const y0=(H-p-((base-mn)/rg)*(H-2*p)).toFixed(1);
   const lo=Math.min(...pts), hi=Math.max(...pts);
-  return `<div class="aspark">
+  const data = pts.map((v,i)=>({ d: i===0 ? "" : keys[i-1], v, p: i===0 ? null : days[keys[i-1]], x: xy[i][0], y: xy[i][1] }));
+  return `<div class="aspark" data-pts='${JSON.stringify(data).replace(/'/g,"&#39;")}' onmousemove="sparkHover(event,this)" onmouseleave="sparkLeave(this)" ontouchstart="sparkHover(event,this)" ontouchmove="sparkHover(event,this)" ontouchend="sparkLeave(this)">
     <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
       <path d="${line} L${W} ${H} L0 ${H} Z" fill="${col}" opacity=".10"/>
       <path d="M0 ${y0} L${W} ${y0}" stroke="var(--stroke)" stroke-width="1" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
       <path d="${line}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+      <line class="sp-cursor" x1="0" x2="0" y1="0" y2="${H}" stroke="var(--midline)" stroke-width="1" vector-effect="non-scaling-stroke" style="display:none"/>
+      <circle class="sp-dot" r="3.5" fill="${col}" stroke="#fff" stroke-width="1.5" vector-effect="non-scaling-stroke" style="display:none"/>
     </svg>
+    <div class="sp-tip" style="display:none"></div>
     <div class="asparkmeta"><span>${dm(keys[0])} – ${dm(keys[keys.length-1])} · ${keys.length} Handelstage</span><span>Tief ${fmt0(lo)} · Hoch ${fmt0(hi)}</span></div>
   </div>`;
 }
+/* Beim Darüberfahren: Tag, Kapitalstand und Tagesergebnis einblenden */
+function sparkHover(ev, el){
+  const pts=JSON.parse(el.dataset.pts||"[]"); if(!pts.length) return;
+  const svg=el.querySelector("svg"), r=svg.getBoundingClientRect();
+  const cx = (ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left;
+  const i = Math.max(0, Math.min(pts.length-1, Math.round(cx / r.width * (pts.length-1))));
+  const p=pts[i];
+  const cur=el.querySelector(".sp-cursor"), dot=el.querySelector(".sp-dot"), tip=el.querySelector(".sp-tip");
+  cur.setAttribute("x1",p.x); cur.setAttribute("x2",p.x); cur.style.display="";
+  dot.setAttribute("cx",p.x); dot.setAttribute("cy",p.y); dot.style.display="";
+  tip.innerHTML = p.d
+    ? `<b>${dm(p.d)}</b> · ${fmt0(p.v)} USD <span class="num ${cls(p.p)}">${fmt(p.p)}</span>`
+    : `<b>Start</b> · ${fmt0(p.v)} USD`;
+  tip.style.display="";
+  const px = p.x / 300 * r.width; const tw = tip.offsetWidth;
+  tip.style.left = Math.max(0, Math.min(r.width - tw, px - tw/2)) + "px";
+  if(ev.touches) ev.preventDefault();
+}
+function sparkLeave(el){ el.querySelectorAll(".sp-cursor,.sp-dot,.sp-tip").forEach(x=>x.style.display="none"); }
 function renderCards(){
   const t0 = today();
   function cardHtml(a){
