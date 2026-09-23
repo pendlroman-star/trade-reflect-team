@@ -241,6 +241,9 @@
   .acct .mini{display:flex; gap:18px; margin-top:16px}
   .acct .mini .mi .v{font-weight:600; font-size:15px}
   .acct .mini .mi .k{font-size:11.5px; color:var(--muted); margin-top:1px}
+  .aspark{margin-top:14px}
+  .aspark svg{display:block; width:100%; height:44px}
+  .asparkmeta{display:flex; justify-content:space-between; gap:8px; font-size:10.5px; color:var(--faint); margin-top:5px; flex-wrap:wrap}
   .meter{margin-top:16px}
   .meter .mrow{display:flex; justify-content:space-between; font-size:11px; color:var(--muted); margin-bottom:6px}
   .track{height:8px; border-radius:100px; background:var(--track); overflow:hidden; position:relative}
@@ -1632,6 +1635,27 @@ function renderLeaderboard(){
 }
 
 /* ---------- Account cards ---------- */
+/* Kapitalverlauf eines Kontos als kleine Linie: Start = Startkapital (+ Startergebnis), dann Tag für Tag kumuliert */
+function acctSpark(a, list, feeSum){
+  const days={}; list.forEach(t=>{ days[t.date]=(days[t.date]||0)+t.pnl; });
+  const keys=Object.keys(days).sort(); if(keys.length<2) return "";
+  const base=(a.capital||0)+(a.startPnl||0); let cum=base;
+  const pts=[base, ...keys.map(k=>cum+=days[k])]; const last=pts[pts.length-1]-((feeSum||0));
+  const mn=Math.min(...pts), mx=Math.max(...pts), rg=(mx-mn)||1, W=300, H=44, p=3;
+  const xy=pts.map((v,i)=>[(i/(pts.length-1))*W, H-p-((v-mn)/rg)*(H-2*p)]);
+  const line=xy.map((q,i)=>(i?"L":"M")+q[0].toFixed(1)+" "+q[1].toFixed(1)).join(" ");
+  const up = pts[pts.length-1]>=base; const col = up ? "var(--posfill)" : "var(--negfill)";
+  const y0=(H-p-((base-mn)/rg)*(H-2*p)).toFixed(1);
+  const lo=Math.min(...pts), hi=Math.max(...pts);
+  return `<div class="aspark">
+    <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+      <path d="${line} L${W} ${H} L0 ${H} Z" fill="${col}" opacity=".10"/>
+      <path d="M0 ${y0} L${W} ${y0}" stroke="var(--stroke)" stroke-width="1" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+      <path d="${line}" fill="none" stroke="${col}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+    </svg>
+    <div class="asparkmeta"><span>${dm(keys[0])} – ${dm(keys[keys.length-1])} · ${keys.length} Handelstage</span><span>Tief ${fmt0(lo)} · Hoch ${fmt0(hi)}</span></div>
+  </div>`;
+}
 function renderCards(){
   const t0 = today();
   function cardHtml(a){
@@ -1677,6 +1701,7 @@ function renderCards(){
       <div class="headline num">${fmt0(capNow)} <span class="cur">USD</span></div>
       <div class="headlbl">Aktuelles Kapital</div>
       <div style="font-size:12.5px;margin-top:9px;color:var(--muted)">Seit Start <span class="num ${cls(total)}" style="font-weight:600">${fmt(total)}</span> · Heute <span class="num ${cls(tp)}" style="font-weight:600">${fmt(tp)}</span>${feeSum>0?` · Gebühren <span class="num neg" style="font-weight:600">${fmt(-feeSum)}</span>`:""}</div>
+      ${acctSpark(a, list, feeSum)}
       ${goalBlock}
       <div class="mini">
         <div class="mi"><div class="v num">${list.length}</div><div class="k">Trades</div></div>
