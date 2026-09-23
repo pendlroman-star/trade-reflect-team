@@ -425,6 +425,10 @@
   .calcell.today{border-color:var(--signal); box-shadow:0 0 0 3px var(--signalbg)}
   .calcell .cd1{font-size:10px; color:var(--faint)}
   .calcell .cd2{font-family:var(--font-mono); font-size:12px; font-weight:600; margin-top:4px}
+  .calcell .cd3{font-size:10px; color:var(--muted); margin-top:2px; white-space:nowrap} .calcell .cd3 .s{display:none}
+  .calcell{min-width:0}
+  @media(max-width:720px){ .calgrid{gap:5px} .calcell{padding:7px 2px; min-height:46px} .calcell .cd2{font-size:11px} .calcell .cd3{font-size:9.5px} .calcell .cd3 .w{display:none} .calcell .cd3 .s{display:inline} .daytile .dd b + span{display:none} }
+  .daytile .dd b{color:var(--muted); font-weight:600}
   .insgrid{display:grid; grid-template-columns:1fr 1.1fr 1fr; gap:16px}
   @media(max-width:960px){ .insgrid{grid-template-columns:1fr} }
 
@@ -1330,7 +1334,12 @@ function afterAddReset(){
   closeEntry();
   render();
 }
-function delTrade(id){ trades = trades.filter(t=>t.id!==id); save(); render(); }
+function delTrade(id){
+  const t=trades.find(x=>x.id===id); if(!t) return;
+  const n=orderCount(t);
+  if(!confirm(`Trade löschen?\n\n${t.date.slice(8,10)}.${t.date.slice(5,7)}. · ${t.symbol} ${t.dir} · ${fmt(t.pnl)} USD${n>1?` · ${n} Orders`:""}\n\nDas lässt sich nicht rückgängig machen.`)) return;
+  trades = trades.filter(x=>x.id!==id); save(); render();
+}
 
 /* ---------- Bearbeiten ---------- */
 let editingId=null;
@@ -1442,9 +1451,10 @@ function weekData(offset){
   const mon = new Date(now); mon.setDate(now.getDate()-day + offset*7);
   const days=[]; for(let i=0;i<7;i++){ const d=new Date(mon); d.setDate(mon.getDate()+i); days.push(isoLocal(d)); }
   const perDay = days.map(d=> trades.filter(t=>t.date===d).reduce((s,t)=>s+t.pnl,0));
+  const perDayN = days.map(d=> trades.filter(t=>t.date===d).length);
   const total = perDay.reduce((a,b)=>a+b,0);
   const n = trades.filter(t=>days.includes(t.date)).length;
-  return {days, perDay, total, n};
+  return {days, perDay, perDayN, total, n};
 }
 function renderWeek(){
   const t0 = isoLocal(new Date());
@@ -1473,8 +1483,8 @@ function renderWeek(){
     <div class="weekgrid">${w.days.map((d,i)=>`
       <div class="daytile ${d===t0?'today':''} ${i>=5?'wknd':''}">
         <div class="dl">${labels[i]}</div>
-        <div class="dv num ${cls(w.perDay[i])}">${w.perDay[i]===0?'–':fmtC(w.perDay[i])}</div>
-        <div class="dd">${dm(w.days[i])}</div>
+        <div class="dv num ${cls(w.perDay[i])}">${w.perDayN[i]===0?'–':fmtC(w.perDay[i])}</div>
+        <div class="dd">${dm(w.days[i])}${w.perDayN[i]?` · <b>${w.perDayN[i]}</b> ${w.perDayN[i]===1?'Trade':'Trades'}`:''}</div>
       </div>`).join("")}</div>`;
 }
 
@@ -1508,10 +1518,10 @@ function renderCalendar(){
     const warn = dl.some(t=> BAD_REASONS.includes(t.reason) || stops.has(t.id));
     const note = (dayNotes[iso]||"").trim();
     let bg = "";
-    if(v>0) bg = `background:rgba(74,154,128,${(.12+.30*Math.abs(v)/maxAbs).toFixed(2)});border-color:transparent`;
-    else if(v<0) bg = `background:rgba(192,106,92,${(.12+.30*Math.abs(v)/maxAbs).toFixed(2)});border-color:transparent`;
+    if(v>0) bg = `background:rgba(74,154,128,.22);border-color:transparent`;
+    else if(v<0) bg = `background:rgba(192,106,92,.22);border-color:transparent`;
     const icons = `<div class="calicons">${warn?`<span class="calwarn" title="Undisziplinierter Tag">⚠</span>`:""}<span class="noteico ${note?'has':''}" title="${note?'Fazit vorhanden':'Fazit hinzufügen'}">✎</span></div>`;
-    html += `<div class="calcell ${iso===t0?'today':''}" style="${bg}" onclick="openDay('${iso}')">${icons}<div class="cd1">${d}</div><div class="cd2 num ${v?cls(v):''}" style="${v?'':'color:var(--faint)'}">${v?fmtC(v):"·"}</div></div>`;
+    html += `<div class="calcell ${iso===t0?'today':''}" style="${bg}" onclick="openDay('${iso}')">${icons}<div class="cd1">${d}</div><div class="cd2 num ${v?cls(v):''}" style="${dl.length?'':'color:var(--faint)'}">${dl.length?fmtC(v||0):"·"}</div>${dl.length?`<div class="cd3">${dl.length} <span class="w">${dl.length===1?'Trade':'Trades'}</span><span class="s">T</span></div>`:''}</div>`;
   }
   document.getElementById("calendar").innerHTML = `<div class="calgrid">${html}</div>`;
 }
