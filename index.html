@@ -1288,8 +1288,8 @@ function addTrade(e){
   const sl = parseFloat(document.getElementById("f_sl").value);
   const risk = calcRisk(sym, entry, sl, lot);
   const dirV = document.getElementById("f_dir").value;
-  /* Laufender Trade? Gleiches Konto, Symbol, Richtung, heute, letzte Order vor weniger als 60 Minuten → anbieten, die Order(s) anzuhängen */
-  const running = [...trades].reverse().find(t=> t.date===dateV && t.account===accId && t.symbol===sym && t.dir===dirV && (Date.now()-(t.lastOrderAt||t.id)) < 60*60*1000);
+  /* Laufender Trade? Gleiches Konto, Symbol, Richtung, heute, letzte Order vor weniger als 30 Minuten → anbieten, die Order(s) anzuhängen */
+  const running = [...trades].reverse().find(t=> t.date===dateV && t.account===accId && t.symbol===sym && t.dir===dirV && (Date.now()-(t.lastOrderAt||t.id)) < 30*60*1000);
   if(running && dateV===today()){
     const n=orderCount(running);
     if(confirm(`Du hast vor kurzem einen ${sym} ${dirV} eingetragen (${fmt(running.pnl)} USD, ${n} ${n===1?"Order":"Orders"}).\n\nOK = als weitere Order an diesen Trade anhängen (bleibt 1 Trade)\nAbbrechen = als neuen Trade zählen`)){
